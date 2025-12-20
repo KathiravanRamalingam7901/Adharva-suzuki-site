@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { motion } from 'framer-motion'
+import Image from 'next/image'
 
 export default function BookTestDrivePage() {
   const [formData, setFormData] = useState({
@@ -11,89 +12,468 @@ export default function BookTestDrivePage() {
     vehicle: '',
     preferredDate: '',
     preferredTime: '',
+    location: '',
   })
+  const [errors, setErrors] = useState<Record<string, string>>({})
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [submitMessage, setSubmitMessage] = useState<string | null>(null)
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const validateForm = (): boolean => {
+    const newErrors: Record<string, string> = {}
+
+    if (!formData.name.trim()) {
+      newErrors.name = 'Invalid Name'
+    } else if (formData.name.trim().length < 2) {
+      newErrors.name = 'Invalid Name'
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    if (!formData.email.trim()) {
+      newErrors.email = 'Invalid Email'
+    } else if (!emailRegex.test(formData.email)) {
+      newErrors.email = 'Invalid Email'
+    }
+
+    const mobileRegex = /^[6-9]\d{9}$/
+    const cleanedPhone = formData.phone.replace(/\D/g, '')
+    if (!formData.phone.trim()) {
+      newErrors.phone = 'Phone number is required'
+    } else if (!mobileRegex.test(cleanedPhone) || cleanedPhone.length !== 10) {
+      newErrors.phone = 'Invalid Phone Number'
+    }
+
+    if (!formData.vehicle) {
+      newErrors.vehicle = 'Please select a vehicle model'
+    }
+
+    if (!formData.preferredDate) {
+      newErrors.preferredDate = 'Please select a preferred date'
+    } else {
+      const selectedDate = new Date(formData.preferredDate)
+      const today = new Date()
+      today.setHours(0, 0, 0, 0)
+      if (selectedDate < today) {
+        newErrors.preferredDate = 'Date cannot be in the past'
+      }
+    }
+
+    if (!formData.preferredTime) {
+      newErrors.preferredTime = 'Please select a preferred time'
+    }
+
+    if (!formData.location.trim()) {
+      newErrors.location = 'Location is required'
+    }
+
+    setErrors(newErrors)
+    const isValid = Object.keys(newErrors).length === 0
+    return isValid
+  }
+
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
+  ) => {
+    const { name, value } = e.target
+    setFormData((prev) => ({ ...prev, [name]: value }))
+    if (errors[name]) {
+      setErrors((prev) => ({ ...prev, [name]: '' }))
+    }
+  }
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    alert('Test drive booked successfully! We will contact you soon.')
+    setSubmitMessage(null)
+    
+    // Validate and get errors directly
+    const newErrors: Record<string, string> = {}
+    
+    if (!formData.name.trim()) {
+      newErrors.name = 'Invalid Name'
+    } else if (formData.name.trim().length < 2) {
+      newErrors.name = 'Invalid Name'
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    if (!formData.email.trim()) {
+      newErrors.email = 'Invalid Email'
+    } else if (!emailRegex.test(formData.email)) {
+      newErrors.email = 'Invalid Email'
+    }
+
+    const mobileRegex = /^[6-9]\d{9}$/
+    const cleanedPhone = formData.phone.replace(/\D/g, '')
+    if (!formData.phone.trim()) {
+      newErrors.phone = 'Phone number is required'
+    } else if (!mobileRegex.test(cleanedPhone) || cleanedPhone.length !== 10) {
+      newErrors.phone = 'Invalid Phone Number'
+    }
+
+    if (!formData.vehicle) {
+      newErrors.vehicle = 'Please select a vehicle model'
+    }
+
+    if (!formData.preferredDate) {
+      newErrors.preferredDate = 'Please select a preferred date'
+    } else {
+      const selectedDate = new Date(formData.preferredDate)
+      const today = new Date()
+      today.setHours(0, 0, 0, 0)
+      if (selectedDate < today) {
+        newErrors.preferredDate = 'Date cannot be in the past'
+      }
+    }
+
+    if (!formData.preferredTime) {
+      newErrors.preferredTime = 'Please select a preferred time'
+    }
+
+    if (!formData.location.trim()) {
+      newErrors.location = 'Location is required'
+    }
+
+    setErrors(newErrors)
+    const isValid = Object.keys(newErrors).length === 0
+    
+    if (!isValid) {
+      // Scroll to first error field
+      const firstErrorField = Object.keys(newErrors)[0]
+      if (firstErrorField) {
+        setTimeout(() => {
+          const element = document.querySelector(`[name="${firstErrorField}"]`)
+          if (element) {
+            element.scrollIntoView({ behavior: 'smooth', block: 'center' })
+            ;(element as HTMLElement).focus()
+          }
+        }, 100)
+      }
+      setSubmitMessage(`Please correct the ${Object.keys(newErrors).length} error(s) in the form.`)
+      return
+    }
+
+    setIsSubmitting(true)
+
+    try {
+      const res = await fetch('/api/enquiry/book-test-drive', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData),
+      })
+
+      if (!res.ok) {
+        throw new Error('Failed to submit')
+      }
+
+      setSubmitMessage('Test drive booked successfully! We will contact you soon.')
+      setFormData({ name: '', email: '', phone: '', vehicle: '', preferredDate: '', preferredTime: '', location: '' })
+      setErrors({})
+    } catch (error) {
+      setSubmitMessage('Something went wrong. Please try again in a moment.')
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   return (
     <div className="min-h-screen pt-16">
-      <motion.div 
-        className="bg-gradient-to-r from-suzuki-blue to-blue-900 text-white py-20"
+      {/* Hero Section with Banner Image */}
+      <motion.section
+        className="relative overflow-hidden"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ duration: 0.6 }}
+        transition={{ duration: 0.7 }}
       >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <motion.h1 
-            className="text-4xl md:text-5xl font-bold mb-4"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-          >
-            Book Test Drive
-          </motion.h1>
-          <motion.p 
-            className="text-xl text-gray-200"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4 }}
-          >
-            Experience your dream Suzuki vehicle before you buy
-          </motion.p>
+        <div className="relative h-64 sm:h-80 md:h-96">
+          <Image
+            src="/images/SectionBanner/250121 Suzuki_Gixxer150SF_Banner_3x1_ratio-02.jpg"
+            alt="Book Test Drive"
+            fill
+            className="object-cover"
+            priority
+          />
+          <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-black/60" />
+          <div className="relative z-10 h-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center">
+            <div className="text-center w-full text-white">
+              <motion.h1
+                className="text-4xl sm:text-5xl md:text-6xl font-extrabold mb-4"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.2 }}
+              >
+                Book Test Drive
+              </motion.h1>
+              <motion.p
+                className="text-lg sm:text-xl md:text-2xl text-gray-200"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.4 }}
+              >
+                Experience your dream Suzuki vehicle before you buy
+              </motion.p>
+            </div>
+          </div>
         </div>
-      </motion.div>
+      </motion.section>
 
-      <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+      <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20">
         <motion.div 
-          className="bg-white rounded-lg shadow-lg p-8"
-          initial={{ opacity: 0, y: 50 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3 }}
+          className="bg-white rounded-2xl shadow-xl p-6 sm:p-8 md:p-10 border border-gray-100"
+          initial={{ opacity: 0, y: 40, scale: 0.97 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          transition={{ delay: 0.2, duration: 0.5 }}
         >
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <motion.div
+            className="flex items-center justify-between mb-6 sm:mb-8"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3 }}
+          >
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Name</label>
-              <input type="text" required className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-suzuki-blue" />
+              <h2 className="text-xl sm:text-2xl font-bold text-gray-900">Schedule your test drive</h2>
+              <p className="text-sm sm:text-base text-gray-500 mt-1">
+                Choose your preferred vehicle, date and time. We’ll confirm your slot shortly.
+              </p>
             </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Email</label>
-              <input type="email" required className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-suzuki-blue" />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Phone</label>
-              <input type="tel" required className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-suzuki-blue" />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Vehicle Model</label>
-              <select required className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-suzuki-blue">
+            <motion.div
+              className="hidden sm:flex items-center justify-center w-12 h-12 rounded-full bg-suzuki-blue/10 text-suzuki-blue text-xl"
+              animate={{ rotate: [0, 10, -10, 0] }}
+              transition={{ duration: 3, repeat: Infinity }}
+            >
+              🏍️
+            </motion.div>
+          </motion.div>
+
+          <form onSubmit={handleSubmit} className="space-y-5 sm:space-y-6">
+            {[
+              { id: 'name', label: 'Name', type: 'text' },
+              { id: 'email', label: 'Email', type: 'email' },
+              { id: 'phone', label: 'Phone', type: 'tel' },
+            ].map((field, index) => (
+              <motion.div
+                key={field.id}
+                className="relative"
+                initial={{ opacity: 0, y: 10 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: '-40px' }}
+                transition={{ delay: 0.3 + index * 0.08 }}
+              >
+                <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1 sm:mb-1.5">
+                  {field.label} <span className="text-red-500">*</span>
+                </label>
+                <motion.input
+                  type={field.type}
+                  name={field.id}
+                  value={formData[field.id as keyof typeof formData]}
+                  onChange={handleChange}
+                  required
+                  maxLength={field.id === 'phone' ? 10 : undefined}
+                  className={`w-full px-4 py-2.5 sm:py-3 border rounded-lg bg-gray-50 focus:bg-white focus:ring-2 focus:border-transparent outline-none text-sm sm:text-base transition-all ${
+                    errors[field.id]
+                      ? 'border-red-500 focus:ring-red-500/30'
+                      : 'border-gray-300 focus:ring-suzuki-blue'
+                  }`}
+                  whileFocus={{ scale: 1.01, boxShadow: '0 0 0 1px rgba(37,99,235,0.3)' }}
+                  whileHover={{ scale: 1.005 }}
+                />
+                {errors[field.id] && (
+                  <motion.p
+                    initial={{ opacity: 0, y: -5 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="text-xs text-red-600 mt-1"
+                  >
+                    {errors[field.id]}
+                  </motion.p>
+                )}
+              </motion.div>
+            ))}
+
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: '-40px' }}
+              transition={{ delay: 0.5 }}
+            >
+              <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1 sm:mb-1.5">
+                Vehicle Model <span className="text-red-500">*</span>
+              </label>
+              <motion.select
+                name="vehicle"
+                value={formData.vehicle}
+                onChange={handleChange}
+                required
+                className={`w-full px-4 py-2.5 sm:py-3 border rounded-lg bg-gray-50 focus:bg-white focus:ring-2 focus:border-transparent outline-none text-sm sm:text-base transition-all ${
+                  errors.vehicle
+                    ? 'border-red-500 focus:ring-red-500/30'
+                    : 'border-gray-300 focus:ring-suzuki-blue'
+                }`}
+                whileFocus={{ scale: 1.01, boxShadow: '0 0 0 1px rgba(37,99,235,0.3)' }}
+                whileHover={{ scale: 1.005 }}
+              >
                 <option value="">Select Vehicle</option>
                 <option>Access 125</option>
                 <option>Avenis</option>
+                <option>Gixxer SF 250</option>
                 <option>Gixxer SF</option>
-                <option>Gixxer</option>
                 <option>Burgman Street</option>
-              </select>
-            </div>
-            <div className="grid md:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Preferred Date</label>
-                <input type="date" required className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-suzuki-blue" />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Preferred Time</label>
-                <input type="time" required className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-suzuki-blue" />
-              </div>
-            </div>
-            <motion.button 
-              type="submit"
-              className="w-full bg-suzuki-blue text-white py-3 px-6 rounded-lg font-semibold"
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
+                <option>Burgman Street EX</option>
+                <option>V-STROM SX</option>
+              </motion.select>
+              {errors.vehicle && (
+                <motion.p
+                  initial={{ opacity: 0, y: -5 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="text-xs text-red-600 mt-1"
+                >
+                  {errors.vehicle}
+                </motion.p>
+              )}
+            </motion.div>
+
+            <motion.div
+              className="grid md:grid-cols-2 gap-4"
+              initial={{ opacity: 0, y: 10 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: '-40px' }}
+              transition={{ delay: 0.55 }}
             >
-              Book Test Drive
+              <div>
+                <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1 sm:mb-1.5">
+                  Preferred Date <span className="text-red-500">*</span>
+                </label>
+                <motion.input
+                  type="date"
+                  name="preferredDate"
+                  value={formData.preferredDate}
+                  onChange={handleChange}
+                  required
+                  min={new Date().toISOString().split('T')[0]}
+                  className={`w-full px-4 py-2.5 sm:py-3 border rounded-lg bg-gray-50 focus:bg-white focus:ring-2 focus:border-transparent outline-none text-sm sm:text-base transition-all ${
+                    errors.preferredDate
+                      ? 'border-red-500 focus:ring-red-500/30'
+                      : 'border-gray-300 focus:ring-suzuki-blue'
+                  }`}
+                  whileFocus={{ scale: 1.01, boxShadow: '0 0 0 1px rgba(37,99,235,0.3)' }}
+                  whileHover={{ scale: 1.005 }}
+                />
+                {errors.preferredDate && (
+                  <motion.p
+                    initial={{ opacity: 0, y: -5 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="text-xs text-red-600 mt-1"
+                  >
+                    {errors.preferredDate}
+                  </motion.p>
+                )}
+              </div>
+              <div>
+                <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1 sm:mb-1.5">
+                  Preferred Time <span className="text-red-500">*</span>
+                </label>
+                <motion.input
+                  type="time"
+                  name="preferredTime"
+                  value={formData.preferredTime}
+                  onChange={handleChange}
+                  required
+                  className={`w-full px-4 py-2.5 sm:py-3 border rounded-lg bg-gray-50 focus:bg-white focus:ring-2 focus:border-transparent outline-none text-sm sm:text-base transition-all ${
+                    errors.preferredTime
+                      ? 'border-red-500 focus:ring-red-500/30'
+                      : 'border-gray-300 focus:ring-suzuki-blue'
+                  }`}
+                  whileFocus={{ scale: 1.01, boxShadow: '0 0 0 1px rgba(37,99,235,0.3)' }}
+                  whileHover={{ scale: 1.005 }}
+                />
+                {errors.preferredTime && (
+                  <motion.p
+                    initial={{ opacity: 0, y: -5 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="text-xs text-red-600 mt-1"
+                  >
+                    {errors.preferredTime}
+                  </motion.p>
+                )}
+              </div>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: '-40px' }}
+              transition={{ delay: 0.6 }}
+            >
+              <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1 sm:mb-1.5">
+                Location <span className="text-red-500">*</span>
+              </label>
+              <motion.input
+                type="text"
+                name="location"
+                value={formData.location}
+                onChange={handleChange}
+                required
+                className={`w-full px-4 py-2.5 sm:py-3 border rounded-lg bg-gray-50 focus:bg-white focus:ring-2 focus:border-transparent outline-none text-sm sm:text-base transition-all ${
+                  errors.location
+                    ? 'border-red-500 focus:ring-red-500/30'
+                    : 'border-gray-300 focus:ring-suzuki-blue'
+                }`}
+                whileFocus={{ scale: 1.01, boxShadow: '0 0 0 1px rgba(37,99,235,0.3)' }}
+                whileHover={{ scale: 1.005 }}
+              />
+              {errors.location && (
+                <motion.p
+                  initial={{ opacity: 0, y: -5 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="text-xs text-red-600 mt-1"
+                >
+                  {errors.location}
+                </motion.p>
+              )}
+            </motion.div>
+
+            {submitMessage && (
+              <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className={`p-3 rounded-lg text-sm ${
+                  submitMessage.includes('successfully')
+                    ? 'bg-green-50 text-green-700 border border-green-200'
+                    : 'bg-red-50 text-red-700 border border-red-200'
+                }`}
+              >
+                {submitMessage}
+              </motion.div>
+            )}
+
+            <motion.button
+              type="submit"
+              disabled={isSubmitting}
+              className="w-full bg-suzuki-blue text-white py-3 sm:py-3.5 px-6 rounded-lg font-semibold text-sm sm:text-base flex items-center justify-center gap-2 shadow-md disabled:opacity-70 disabled:cursor-not-allowed"
+              whileHover={{ scale: isSubmitting ? 1 : 1.03, boxShadow: '0 12px 30px rgba(37,99,235,0.45)' }}
+              whileTap={{ scale: isSubmitting ? 1 : 0.97 }}
+              initial={{ opacity: 0, y: 15 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: '-40px' }}
+              transition={{ delay: 0.7 }}
+            >
+              {isSubmitting ? (
+                <>
+                  <motion.span
+                    animate={{ rotate: 360 }}
+                    transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+                  >
+                    ⟳
+                  </motion.span>
+                  <span>Submitting...</span>
+                </>
+              ) : (
+                <>
+                  <span>Book Test Drive</span>
+                  <motion.span
+                    animate={{ x: [0, 4, 0] }}
+                    transition={{ duration: 1.2, repeat: Infinity }}
+                  >
+                    ➜
+                  </motion.span>
+                </>
+              )}
             </motion.button>
           </form>
         </motion.div>

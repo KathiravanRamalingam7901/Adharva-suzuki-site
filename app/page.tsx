@@ -1,16 +1,16 @@
 'use client'
 
 import Hero from '@/components/Hero'
-import VehicleModels from '@/components/VehicleModels'
+import HomeProductSliders from '@/components/HomeProductSliders'
 import Services from '@/components/Services'
 import About from '@/components/About'
 import Contact from '@/components/Contact'
 
 export default function Home() {
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-white">
       <Hero />
-      <VehicleModels />
+      <HomeProductSliders />
       <Services />
       <About />
       <Contact />
