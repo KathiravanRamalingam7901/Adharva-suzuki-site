@@ -64,16 +64,16 @@ const services = [
 
 export default function Services() {
   return (
-    <section id="services" className="py-12 md:py-20 bg-white">
+    <section id="services" className="py-12 sm:py-20 md:py-24 bg-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <motion.div 
+        <motion.div
           className="text-center mb-12 md:mb-16"
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-100px" }}
           transition={{ duration: 0.6 }}
         >
-          <motion.h2 
+          <motion.h2
             className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 mb-4"
             initial={{ opacity: 0, scale: 0.9 }}
             whileInView={{ opacity: 1, scale: 1 }}
@@ -82,7 +82,7 @@ export default function Services() {
           >
             Why Choose Us
           </motion.h2>
-          <motion.p 
+          <motion.p
             className="text-lg sm:text-xl text-gray-600 max-w-2xl mx-auto"
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
@@ -100,24 +100,24 @@ export default function Services() {
               initial={{ opacity: 0, y: 50, scale: 0.9 }}
               whileInView={{ opacity: 1, y: 0, scale: 1 }}
               viewport={{ once: true, margin: "-50px" }}
-              transition={{ 
-                duration: 0.5, 
+              transition={{
+                duration: 0.5,
                 delay: index * 0.1,
                 type: "spring",
                 stiffness: 100
               }}
-              whileHover={{ scale: 1.05, y: -5 }}
+              whileHover={{ scale: 1.05, y: -10 }}
               whileTap={{ scale: 0.98 }}
-              className="bg-gray-50 rounded-lg p-6 md:p-8 hover:shadow-xl transition duration-300 border border-gray-200 hover:border-suzuki-blue cursor-pointer"
+              className="bg-white rounded-3xl p-8 transition-all duration-500 border border-gray-100 hover:border-suzuki-blue/30 shadow-xl shadow-gray-200/50 cursor-pointer"
             >
-              <motion.div 
+              <motion.div
                 className="text-suzuki-blue mb-4"
                 whileHover={{ rotate: 360, scale: 1.1 }}
                 transition={{ duration: 0.6 }}
               >
                 {service.icon}
               </motion.div>
-              <motion.h3 
+              <motion.h3
                 className="text-lg md:text-xl font-bold text-gray-900 mb-3"
                 initial={{ opacity: 0 }}
                 whileInView={{ opacity: 1 }}
@@ -126,7 +126,7 @@ export default function Services() {
               >
                 {service.title}
               </motion.h3>
-              <motion.p 
+              <motion.p
                 className="text-gray-600 text-sm md:text-base"
                 initial={{ opacity: 0 }}
                 whileInView={{ opacity: 1 }}

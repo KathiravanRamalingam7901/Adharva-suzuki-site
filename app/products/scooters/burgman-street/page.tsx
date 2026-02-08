@@ -1,21 +1,21 @@
 'use client'
 
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion, AnimatePresence, useMotionValue, useSpring, useTransform } from 'framer-motion'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useState } from 'react'
 
 const colorVariants = [
   {
-    name: 'Standard Edition',
+    name: 'Metallic Matte Green',
     color: 'Standard',
-    hex: '#1F2937',
+    hex: '#2D3E35',
     image: '/images/scooters/Burgman Street/Burgman Street Standard Edition.png',
   },
   {
-    name: 'Ride Connect Edition',
+    name: 'Metallic Matte Green',
     color: 'Ride Connect',
-    hex: '#2563EB',
+    hex: '#2D3E35',
     image: '/images/scooters/Burgman Street/Burgman Street Ride Connect Edition.png',
   },
 ]
@@ -23,6 +23,12 @@ const colorVariants = [
 export default function BurgmanStreetPage() {
   const [selectedColor, setSelectedColor] = useState(colorVariants[0])
   const [isZoomed, setIsZoomed] = useState(false)
+
+  // Parallax Motion Values
+  const mouseX = useMotionValue(0)
+  const mouseY = useMotionValue(0)
+  const springX = useSpring(mouseX, { stiffness: 100, damping: 30 })
+  const springY = useSpring(mouseY, { stiffness: 100, damping: 30 })
 
   const openZoom = () => {
     setIsZoomed(true)
@@ -35,44 +41,90 @@ export default function BurgmanStreetPage() {
   }
 
   return (
-    <div className="min-h-screen pt-16 bg-gray-50">
-      <motion.div 
-        className="bg-gradient-to-r from-suzuki-blue via-blue-700 to-suzuki-blue text-white py-12 sm:py-16 md:py-20 relative overflow-hidden"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.6 }}
+    <div className="min-h-screen pt-20 bg-white text-slate-900">
+      {/* Header Section - Careers Style */}
+      <motion.section
+        className="relative overflow-hidden"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.7 }}
       >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        <div className="absolute inset-0 bg-gradient-to-br from-white via-sky-100 to-suzuki-blue/20" />
+        <div className="absolute -right-20 top-10 w-64 h-64 bg-suzuki-red/10 blur-3xl rounded-full" />
+        <div className="absolute -left-24 -bottom-12 w-72 h-72 bg-blue-500/10 blur-3xl rounded-full" />
+
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20">
           <motion.div
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.2 }}
           >
-            <Link href="/products/scooters" className="inline-flex items-center text-white/80 hover:text-white mb-4 transition-colors">
+            <Link href="/products/scooters" className="inline-flex items-center text-slate-600 hover:text-suzuki-blue mb-4 transition-colors text-sm font-medium">
               <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
               </svg>
               Back to Scooters
             </Link>
           </motion.div>
-          <motion.h1 
-            className="text-4xl sm:text-5xl md:text-6xl font-bold mb-4"
+          <motion.p
+            className="text-xs uppercase tracking-[0.25em] text-suzuki-blue mb-3 font-bold"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.25 }}
+          >
+            Premium Urban Scooter
+          </motion.p>
+          <motion.h1
+            className="text-4xl sm:text-5xl md:text-6xl font-extrabold mb-4 text-slate-900"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3, duration: 0.6 }}
           >
-            Burgman Street
+            Burgman <span className="text-suzuki-red">Street</span>
           </motion.h1>
-          <motion.p 
-            className="text-lg sm:text-xl md:text-2xl text-gray-200 max-w-3xl"
+          <motion.p
+            className="text-base sm:text-lg md:text-xl text-slate-700 max-w-3xl leading-relaxed mb-8"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4, duration: 0.6 }}
           >
-            A premium urban scooter that offers maxi-scooter styling, comfort, and convenience for every ride.
+            A premium urban scooter that offers maxi-scooter styling, comfort, and convenience for every ride. Experience the luxury of open-road cruising in the city.
           </motion.p>
+
+          <motion.div
+            className="flex flex-wrap gap-4"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.5, duration: 0.6 }}
+          >
+            <Link href="/enquiry/get-quote">
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="bg-suzuki-blue text-white px-8 py-3 rounded-full font-bold shadow-lg shadow-suzuki-blue/20 hover:bg-blue-700 transition-all flex items-center gap-2"
+              >
+                Get Quote
+              </motion.button>
+            </Link>
+            <a
+              href="https://www.adharvaasuzuki.com/_files/ugd/703249_2f3cfa161b614345b450412a0f80e7ab.pdf"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="bg-white border-2 border-suzuki-blue text-suzuki-blue px-8 py-3 rounded-full font-bold hover:bg-suzuki-blue hover:text-white transition-all flex items-center gap-2"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10" />
+                </svg>
+                Download Brochure
+              </motion.button>
+            </a>
+          </motion.div>
         </div>
-      </motion.div>
+      </motion.section>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 md:py-20">
         <div className="grid lg:grid-cols-2 gap-8 sm:gap-12 items-start">
@@ -81,7 +133,7 @@ export default function BurgmanStreetPage() {
             initial={{ opacity: 0, x: -30, scale: 0.95 }}
             whileInView={{ opacity: 1, x: 0, scale: 1 }}
             viewport={{ once: true, margin: "-20px" }}
-            transition={{ 
+            transition={{
               duration: 0.8,
               type: "spring",
               stiffness: 100
@@ -89,98 +141,91 @@ export default function BurgmanStreetPage() {
             className="lg:sticky lg:top-24"
           >
             <motion.div
-              className="relative h-[400px] sm:h-[500px] md:h-[600px] lg:h-[700px] bg-gradient-to-br from-gray-100 to-gray-200 rounded-2xl overflow-hidden shadow-2xl cursor-zoom-in touch-none"
-              onClick={openZoom}
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              transition={{ 
-                duration: 0.3,
-                type: "spring",
-                stiffness: 300
+              className="relative h-[400px] sm:h-[500px] md:h-[600px] lg:h-[700px] bg-slate-50 rounded-3xl overflow-hidden shadow-2xl cursor-crosshair group"
+              onMouseMove={(e) => {
+                const rect = e.currentTarget.getBoundingClientRect();
+                const x = (e.clientX - rect.left) / rect.width - 0.5;
+                const y = (e.clientY - rect.top) / rect.height - 0.5;
+                mouseX.set(x * 20);
+                mouseY.set(y * 20);
               }}
-              drag="x"
-              dragConstraints={{ left: 0, right: 0 }}
-              dragElastic={0.2}
+              onMouseLeave={() => {
+                mouseX.set(0);
+                mouseY.set(0);
+              }}
+              onClick={openZoom}
             >
-              <AnimatePresence mode="wait">
-                <motion.div
-                  key={selectedColor.name}
-                  initial={{ opacity: 0, scale: 0.9, rotateY: -10 }}
-                  animate={{ opacity: 1, scale: 1, rotateY: 0 }}
-                  exit={{ opacity: 0, scale: 0.9, rotateY: 10 }}
-                  transition={{ 
-                    duration: 0.5,
-                    type: "spring",
-                    stiffness: 200
-                  }}
-                  className="relative w-full h-full"
-                >
-                  <Image
-                    src={selectedColor.image}
-                    alt={`Burgman Street ${selectedColor.name}`}
-                    fill
-                    className="object-contain p-4 sm:p-6 md:p-8 lg:p-12"
-                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 100vw, 50vw"
-                    quality={95}
-                    priority
-                    onError={(e) => {
-                      const target = e.target as HTMLImageElement
-                      target.style.display = 'none'
-                      const parent = target.parentElement
-                      if (parent) {
-                        parent.innerHTML = '<div class=\"text-8xl flex items-center justify-center h-full\">🛵</div>'
-                      }
-                    }}
-                  />
-                </motion.div>
-              </AnimatePresence>
-
-              {/* Zoom indicator - Enhanced for mobile */}
+              {/* Dynamic Backdrop */}
               <motion.div
-                className="absolute bottom-3 right-3 sm:bottom-4 sm:right-4 bg-black/70 backdrop-blur-md text-white px-3 py-2 sm:px-4 sm:py-2 rounded-full text-xs sm:text-sm font-semibold flex items-center gap-2 shadow-lg"
-                initial={{ opacity: 0, y: 20, scale: 0.8 }}
-                animate={{ 
-                  opacity: [0.8, 1, 0.8],
-                  y: 0,
-                  scale: 1
+                className="absolute inset-0 opacity-20 blur-[100px] pointer-events-none"
+                animate={{
+                  backgroundColor: selectedColor.name.includes('Green') ? '#2D3E35' : '#1E293B'
                 }}
-                transition={{ 
-                  delay: 0.5,
-                  opacity: {
-                    duration: 2,
-                    repeat: Infinity,
-                    ease: "easeInOut"
-                  }
+                transition={{ duration: 1 }}
+              />
+
+              {/* Parallax Container */}
+              <motion.div
+                className="relative w-full h-full flex items-center justify-center z-10"
+                style={{
+                  rotateX: springY,
+                  rotateY: springX,
+                  transformStyle: "preserve-3d"
                 }}
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.9 }}
               >
-                <motion.svg 
-                  className="w-4 h-4 sm:w-5 sm:h-5" 
-                  fill="none" 
-                  stroke="currentColor" 
-                  viewBox="0 0 24 24"
-                  animate={{ scale: [1, 1.2, 1] }}
-                  transition={{ duration: 1.5, repeat: Infinity }}
-                >
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v6m3-3H7" />
-                </motion.svg>
-                <span className="hidden sm:inline">Tap to Zoom</span>
-                <span className="sm:hidden">Zoom</span>
+                <AnimatePresence mode="wait">
+                  <motion.div
+                    key={selectedColor.name}
+                    initial={{ opacity: 0, scale: 0.8, y: 20 }}
+                    animate={{ opacity: 1, scale: 1, y: 0 }}
+                    exit={{ opacity: 0, scale: 0.8, y: -20 }}
+                    transition={{ type: "spring", stiffness: 100, damping: 20 }}
+                    className="relative w-[90%] h-[90%]"
+                  >
+                    <Image
+                      src={selectedColor.image}
+                      alt={selectedColor.name}
+                      fill
+                      className="object-contain drop-shadow-[0_20px_50px_rgba(0,0,0,0.3)]"
+                      priority
+                    />
+
+                    {/* Floor Reflection */}
+                    <div className="absolute -bottom-10 left-1/2 -translate-x-1/2 w-4/5 h-20 bg-black/5 blur-2xl rounded-[100%] scale-y-50 -z-10" />
+                  </motion.div>
+                </AnimatePresence>
+
+                {/* Feature Labels */}
+                <div className="hidden lg:block absolute inset-0 pointer-events-none">
+                  {[
+                    { label: "Maxi-Scooter Styling", x: "20%", y: "45%" },
+                    { label: "Ride Connect Edition", x: "40%", y: "30%" },
+                    { label: "Advanced SEP Engine", x: "70%", y: "70%" },
+                    { label: "Spacious Footboard", x: "35%", y: "60%" }
+                  ].map((feature, i) => (
+                    <motion.div
+                      key={i}
+                      className="absolute group/label flex items-center gap-2"
+                      style={{ left: feature.x, top: feature.y }}
+                      initial={{ opacity: 0 }}
+                      whileInView={{ opacity: 1 }}
+                      transition={{ delay: 0.5 + i * 0.1 }}
+                    >
+                      <div className="bg-white/80 backdrop-blur-sm border border-slate-200 px-3 py-1 rounded-full text-[10px] font-bold text-slate-900 shadow-sm opacity-0 group-hover/label:opacity-100 transition-opacity whitespace-nowrap">
+                        {feature.label}
+                      </div>
+                    </motion.div>
+                  ))}
+                </div>
               </motion.div>
 
-              {/* Animated background gradient */}
-              <motion.div
-                className="absolute inset-0 bg-gradient-to-r from-suzuki-blue/10 via-transparent to-suzuki-red/10 pointer-events-none"
-                animate={{
-                  x: [0, 100, 0],
-                }}
-                transition={{
-                  duration: 4,
-                  repeat: Infinity,
-                  ease: "easeInOut"
-                }}
-              />
+              {/* Interaction Hint */}
+              <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-3 bg-white/10 backdrop-blur-md border border-white/20 px-4 py-2 rounded-full pointer-events-none opacity-0 group-hover:opacity-100 transition-all duration-500 transform translate-y-4 group-hover:translate-y-0">
+                <svg className="w-4 h-4 text-white animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122" />
+                </svg>
+                <span className="text-white text-xs font-medium tracking-wider uppercase">Interactive View</span>
+              </div>
             </motion.div>
           </motion.div>
 
@@ -189,7 +234,7 @@ export default function BurgmanStreetPage() {
             initial={{ opacity: 0, x: 30, scale: 0.95 }}
             whileInView={{ opacity: 1, x: 0, scale: 1 }}
             viewport={{ once: true, margin: "-20px" }}
-            transition={{ 
+            transition={{
               duration: 0.8,
               type: "spring",
               stiffness: 100
@@ -221,15 +266,6 @@ export default function BurgmanStreetPage() {
                 A premium scooter with maxi-scooter styling, offering comfort, storage space, and advanced features for urban commuting.
               </motion.p>
 
-              <motion.p
-                className="text-3xl sm:text-4xl font-bold text-suzuki-blue mb-8"
-                initial={{ opacity: 0, scale: 0.9 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                viewport={{ once: true }}
-                transition={{ delay: 0.3, type: "spring" }}
-              >
-                ₹1.10 Lakh*
-              </motion.p>
 
               {/* Color Variants - Enhanced for mobile */}
               <div className="mb-6 sm:mb-8">
@@ -253,15 +289,14 @@ export default function BurgmanStreetPage() {
                     <motion.button
                       key={color.name}
                       onClick={() => setSelectedColor(color)}
-                      className={`relative group flex flex-col items-center gap-1.5 sm:gap-2 p-2.5 sm:p-3 rounded-xl transition-all ${
-                        selectedColor.name === color.name
-                          ? 'bg-gray-100 scale-110 shadow-lg ring-2 ring-suzuki-blue ring-offset-2'
-                          : 'bg-gray-50 hover:bg-gray-100'
-                      }`}
+                      className={`relative group flex flex-col items-center gap-1.5 sm:gap-2 p-2.5 sm:p-3 rounded-xl transition-all ${selectedColor.name === color.name
+                        ? 'bg-gray-100 scale-110 shadow-lg ring-2 ring-suzuki-blue ring-offset-2'
+                        : 'bg-gray-50 hover:bg-gray-100'
+                        }`}
                       initial={{ opacity: 0, scale: 0.8, rotate: -10 }}
                       whileInView={{ opacity: 1, scale: 1, rotate: 0 }}
                       viewport={{ once: true }}
-                      transition={{ 
+                      transition={{
                         delay: 0.5 + index * 0.1,
                         type: "spring",
                         stiffness: 200
@@ -271,18 +306,16 @@ export default function BurgmanStreetPage() {
                       title={color.name}
                     >
                       <motion.div
-                        className={`w-14 h-14 sm:w-16 sm:h-16 md:w-20 md:h-20 rounded-full border-4 transition-all ${
-                          selectedColor.name === color.name
-                            ? 'border-suzuki-blue shadow-xl scale-110 ring-2 ring-suzuki-blue/50'
-                            : 'border-gray-300'
-                        }`}
+                        className={`w-14 h-14 sm:w-16 sm:h-16 md:w-20 md:h-20 rounded-full border-4 transition-all ${selectedColor.name === color.name
+                          ? 'border-suzuki-blue shadow-xl scale-110 ring-2 ring-suzuki-blue/50'
+                          : 'border-gray-300'
+                          }`}
                         style={{ backgroundColor: color.hex }}
                         whileHover={{ scale: 1.2, rotate: 360 }}
                         transition={{ duration: 0.5 }}
                       />
-                      <span className={`text-xs sm:text-sm font-medium text-center ${
-                        selectedColor.name === color.name ? 'text-suzuki-blue font-bold' : 'text-gray-600'
-                      }`}>
+                      <span className={`text-xs sm:text-sm font-medium text-center ${selectedColor.name === color.name ? 'text-suzuki-blue font-bold' : 'text-gray-600'
+                        }`}>
                         {color.name}
                       </span>
                     </motion.button>
@@ -298,33 +331,23 @@ export default function BurgmanStreetPage() {
                 viewport={{ once: true }}
                 transition={{ delay: 0.6 }}
               >
-                <Link href="/enquiry/get-quote" className="flex-1">
-                  <motion.button
-                    whileHover={{ scale: 1.05, boxShadow: "0 10px 20px rgba(30, 64, 175, 0.3)" }}
-                    whileTap={{ scale: 0.92, y: 2 }}
-                    className="w-full bg-suzuki-blue hover:bg-opacity-90 text-white px-6 py-3.5 sm:py-4 rounded-lg text-base sm:text-lg font-semibold transition duration-300 shadow-lg active:shadow-md"
-                  >
-                    Get Quote
-                  </motion.button>
-                </Link>
                 <motion.button
                   onClick={openZoom}
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.92, y: 2 }}
-                  className="flex-1 sm:flex-initial bg-gray-200 hover:bg-gray-300 text-gray-800 px-6 py-3.5 sm:py-4 rounded-lg text-base sm:text-lg font-semibold transition duration-300 flex items-center justify-center gap-2 active:shadow-md"
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  className="w-full bg-gray-100 hover:bg-gray-200 text-gray-800 px-6 py-4 rounded-xl text-lg font-bold transition-all flex items-center justify-center gap-3 border border-gray-200 shadow-sm active:shadow-inner"
                 >
-                  <motion.svg 
-                    className="w-5 h-5" 
-                    fill="none" 
-                    stroke="currentColor" 
+                  <motion.svg
+                    className="w-6 h-6 text-suzuki-blue"
+                    fill="none"
+                    stroke="currentColor"
                     viewBox="0 0 24 24"
                     animate={{ scale: [1, 1.1, 1] }}
                     transition={{ duration: 2, repeat: Infinity }}
                   >
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v6m3-3H7" />
                   </motion.svg>
-                  <span className="hidden sm:inline">View Full Size</span>
-                  <span className="sm:hidden">Zoom</span>
+                  <span>Interactive Zoom View</span>
                 </motion.button>
               </motion.div>
             </motion.div>
@@ -358,7 +381,7 @@ export default function BurgmanStreetPage() {
               initial={{ scale: 0.7, opacity: 0, rotateY: -20 }}
               animate={{ scale: 1, opacity: 1, rotateY: 0 }}
               exit={{ scale: 0.7, opacity: 0, rotateY: 20 }}
-              transition={{ 
+              transition={{
                 duration: 0.4,
                 type: "spring",
                 stiffness: 200
@@ -384,7 +407,7 @@ export default function BurgmanStreetPage() {
                 sizes="100vw"
               />
             </motion.div>
-            
+
             {/* Swipe down indicator for mobile */}
             <motion.div
               className="absolute bottom-4 left-1/2 -translate-x-1/2 text-white/70 text-xs sm:text-sm flex items-center gap-2 z-10"

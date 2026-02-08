@@ -24,32 +24,47 @@ export default function GalleryPage() {
   const [selectedImage, setSelectedImage] = useState<string | null>(null)
 
   return (
-    <div className="min-h-screen pt-16">
-      <motion.div 
-        className="bg-gradient-to-r from-suzuki-blue to-blue-900 text-white py-20"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.6 }}
+    <div className="min-h-screen pt-20 bg-white text-slate-900">
+      {/* Hero */}
+      <motion.section
+        className="relative overflow-hidden"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.7 }}
       >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <motion.h1 
-            className="text-4xl md:text-5xl font-bold mb-4"
-            initial={{ opacity: 0, y: 20 }}
+        <div className="absolute inset-0 bg-gradient-to-br from-white via-sky-100 to-suzuki-blue/20" />
+        <div className="absolute -right-20 top-10 w-64 h-64 bg-suzuki-red/10 blur-3xl rounded-full" />
+        <div className="absolute -left-24 -bottom-12 w-72 h-72 bg-blue-500/10 blur-3xl rounded-full" />
+
+        <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20 text-center">
+          <motion.p
+            className="text-xs uppercase tracking-[0.25em] text-suzuki-blue mb-3"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
+          >
+            Gallery
+          </motion.p>
+          <motion.h1
+            className="text-3xl sm:text-4xl md:text-5xl font-extrabold mb-3 sm:mb-4 leading-tight text-slate-900"
+            initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
           >
-            Gallery
+            Explore the world of
+            <span className="block text-suzuki-red">Adharvaa Suzuki</span>
           </motion.h1>
-          <motion.p 
-            className="text-xl text-gray-200"
-            initial={{ opacity: 0, y: 20 }}
+          <motion.p
+            className="text-sm sm:text-base md:text-lg text-slate-700 max-w-2xl mx-auto"
+            initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4 }}
+            transition={{ delay: 0.3 }}
           >
-            Explore our collection of Suzuki motorcycles and scooters
+            Discover our collection of high-performance motorcycles and stylish scooters.
+            Witness the blend of precision engineering and urban elegance.
           </motion.p>
         </div>
-      </motion.div>
+      </motion.section>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
         <div className="grid md:grid-cols-3 gap-6">

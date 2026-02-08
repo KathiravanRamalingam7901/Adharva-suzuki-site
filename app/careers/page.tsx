@@ -26,7 +26,7 @@ const positions: Position[] = [
   },
   {
     id: 'cashier',
-    title: 'Casier',
+    title: 'Cashier',
     location: 'Coimbatore',
     thumbnail: '/images/careers/Casier.jpg',
     responsibilities: [
@@ -90,6 +90,28 @@ const positions: Position[] = [
       'Support sales and service teams with reports',
     ],
   },
+  {
+    id: 'mechanic',
+    title: 'Mechanic/Technician',
+    location: 'Coimbatore',
+    thumbnail: '/images/careers/Service Technician.jpg',
+    responsibilities: [
+      'Perform scheduled vehicle maintenance',
+      'Repair and replace damaged parts',
+      'Test components and systems',
+    ],
+  },
+  {
+    id: 'telecaller',
+    title: 'Telecaller',
+    location: 'Coimbatore',
+    thumbnail: '/images/careers/Telecaller.png',
+    responsibilities: [
+      'Contact potential/existing customers',
+      'Answer questions about products',
+      'Keep records of calls and sales',
+    ],
+  },
 ]
 
 const cardVariants = {
@@ -119,6 +141,7 @@ export default function CareersPage() {
   const [selectedPosition, setSelectedPosition] = useState<string>(positions[0]?.id ?? '')
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [formMessage, setFormMessage] = useState<string | null>(null)
+  const [errors, setErrors] = useState<Record<string, string>>({})
 
   const [formData, setFormData] = useState({
     name: '',
@@ -129,47 +152,124 @@ export default function CareersPage() {
   })
   const [resumeFile, setResumeFile] = useState<File | null>(null)
 
+  const validateForm = () => {
+    const newErrors: Record<string, string> = {}
+
+    // Name validation: only allow letters, spaces, and dots
+    if (!formData.name.trim()) {
+      newErrors.name = 'Name is required'
+    } else if (!/^[a-zA-Z\s\.]+$/.test(formData.name)) {
+      newErrors.name = 'Name should only contain letters and spaces'
+    }
+
+    if (!formData.email.trim()) {
+      newErrors.email = 'Email is required'
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+      newErrors.email = 'Invalid email address'
+    }
+    if (!formData.phone.trim()) {
+      newErrors.phone = 'Phone number is required'
+    } else if (!/^\d{10}$/.test(formData.phone.replace(/\D/g, ''))) {
+      newErrors.phone = 'Phone number must be 10 digits'
+    }
+    if (!formData.address.trim()) newErrors.address = 'Address is required'
+    if (!resumeFile) newErrors.resume = 'Resume is required'
+
+    setErrors(newErrors)
+    return Object.keys(newErrors).length === 0
+  }
+
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
   ) => {
     const { name, value } = e.target
     setFormData((prev) => ({ ...prev, [name]: value }))
+    // Clear error when user types
+    if (errors[name]) {
+      setErrors((prev) => {
+        const newErrors = { ...prev }
+        delete newErrors[name]
+        return newErrors
+      })
+    }
+  }
+
+  // Clear resume error when file is selected
+  const handleFileChange = (file: File | null) => {
+    setResumeFile(file)
+    if (file && errors.resume) {
+      setErrors(prev => {
+        const newErrors = { ...prev }
+        delete newErrors.resume
+        return newErrors
+      })
+    }
   }
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     setFormMessage(null)
+
+    if (!validateForm()) {
+      setFormMessage('Please fix the errors highlighted in red.')
+      return
+    }
+
     setIsSubmitting(true)
 
     try {
-      const body = {
-        ...formData,
-        positionTitle: positions.find((p) => p.id === formData.position)?.title ?? '',
-        hasResume: !!resumeFile,
+      // -----------------------------------------------------------------------
+      // SECURE SUBMISSION (FormSubmit.co)
+      // -----------------------------------------------------------------------
+      const TARGET_EMAIL = "khebzonee@gmail.com"
+      const endpoint = `https://formsubmit.co/${TARGET_EMAIL}`
+
+      // Use FormData to support file uploads
+      const formDataToSend = new FormData()
+      formDataToSend.append('Applicant Name', formData.name)
+      formDataToSend.append('Email Address', formData.email)
+      formDataToSend.append('Phone Number', formData.phone)
+      formDataToSend.append('Residential Address', formData.address)
+      formDataToSend.append('Job Position', positions.find((p) => p.id === formData.position)?.title ?? formData.position)
+
+      // Special FormSubmit settings
+      formDataToSend.append('_subject', `New Career Application: ${formData.name} - ${positions.find((p) => p.id === formData.position)?.title ?? ''}`)
+      formDataToSend.append('_captcha', 'false') // Disable captcha for cleaner UX
+      formDataToSend.append('_template', 'table') // Structured table format
+      formDataToSend.append('_order', 'Job Position,Applicant Name,Email Address,Phone Number,Residential Address') // Force order
+
+      // Append Resume File
+      if (resumeFile) {
+        formDataToSend.append('Resume', resumeFile)
       }
 
-      const res = await fetch('/api/careers/apply', {
+      const response = await fetch(endpoint, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(body),
-      })
+        body: formDataToSend,
+        headers: {
+          'Accept': 'application/json'
+        }
+      });
 
-      if (!res.ok) {
-        throw new Error('Failed to submit')
+      if (response.ok) {
+        setFormMessage('Application submitted successfully! Our team will contact you soon.')
+        setFormData({
+          name: '',
+          email: '',
+          phone: '',
+          address: '',
+          position: positions[0]?.id ?? '',
+        })
+        setSelectedPosition(positions[0]?.id ?? '')
+        setResumeFile(null)
+      } else {
+        const data = await response.json().catch(() => ({}))
+        console.error('FormSubmit Error:', data)
+        setFormMessage('Something went wrong with the submission service. Please try again.')
       }
-
-      setFormMessage('Application submitted successfully. We will contact you soon.')
-      setFormData({
-        name: '',
-        email: '',
-        phone: '',
-        address: '',
-        position: positions[0]?.id ?? '',
-      })
-      setSelectedPosition(positions[0]?.id ?? '')
-      setResumeFile(null)
     } catch (error) {
-      setFormMessage('Something went wrong. Please try again in a moment.')
+      console.error('Submission error:', error)
+      setFormMessage('Network error. Please try again later.')
     } finally {
       setIsSubmitting(false)
     }
@@ -204,7 +304,7 @@ export default function CareersPage() {
             transition={{ delay: 0.2 }}
           >
             Build your future with
-            <span className="block text-suzuki-red">Suzuki in Coimbatore</span>
+            <span className="block text-suzuki-red">Adharvaa Suzuki</span>
           </motion.h1>
           <motion.p
             className="text-sm sm:text-base md:text-lg text-slate-700 max-w-2xl mx-auto"
@@ -335,135 +435,158 @@ export default function CareersPage() {
             <span className="font-semibold text-suzuki-blue">admin.suzuki@adarvaa.in</span>.
           </p>
 
-          <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-5">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="space-y-1.5">
-                  <label className="block text-[11px] sm:text-xs font-medium text-slate-700">
-                    Name
-                  </label>
-                  <input
-                    type="text"
-                    name="name"
-                    required
-                    value={formData.name}
-                    onChange={handleChange}
-                    className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 outline-none focus:border-suzuki-blue focus:ring-2 focus:ring-suzuki-blue/30"
-                  />
-                </div>
-                <div className="space-y-1.5">
-                  <label className="block text-[11px] sm:text-xs font-medium text-slate-700">
-                    Email
-                  </label>
-                  <input
-                    type="email"
-                    name="email"
-                    required
-                    value={formData.email}
-                    onChange={handleChange}
-                    className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 outline-none focus:border-suzuki-blue focus:ring-2 focus:ring-suzuki-blue/30"
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="space-y-1.5">
-                  <label className="block text-[11px] sm:text-xs font-medium text-slate-700">
-                    Phone
-                  </label>
-                  <input
-                    type="tel"
-                    name="phone"
-                    required
-                    value={formData.phone}
-                    onChange={handleChange}
-                    className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 outline-none focus:border-suzuki-blue focus:ring-2 focus:ring-suzuki-blue/30"
-                  />
-                </div>
-                <div className="space-y-1.5">
-                  <label className="block text-[11px] sm:text-xs font-medium text-slate-700">
-                    Position
-                  </label>
-                  <select
-                    name="position"
-                    required
-                    value={formData.position}
-                    onChange={handleChange}
-                    className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 outline-none focus:border-suzuki-blue focus:ring-2 focus:ring-suzuki-blue/30"
-                  >
-                    {positions.map((pos) => (
-                      <option key={pos.id} value={pos.id}>
-                        {pos.title} – {pos.location}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-
+          <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-5" noValidate>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-1.5">
                 <label className="block text-[11px] sm:text-xs font-medium text-slate-700">
-                  Address
+                  Name
                 </label>
-                <textarea
-                  name="address"
-                  required
-                  rows={3}
-                  value={formData.address}
+                <input
+                  type="text"
+                  name="name"
+                  value={formData.name}
                   onChange={handleChange}
-                  className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 outline-none focus:border-suzuki-blue focus:ring-2 focus:ring-suzuki-blue/30 resize-none"
+                  className={`w-full rounded-lg border bg-white px-3 py-2 text-sm text-slate-900 outline-none focus:ring-2 ${errors.name
+                    ? 'border-red-500 focus:border-red-500 focus:ring-red-200'
+                    : 'border-slate-300 focus:border-suzuki-blue focus:ring-suzuki-blue/30'
+                    }`}
                 />
+                {errors.name && <p className="text-[10px] text-red-500">{errors.name}</p>}
               </div>
-
               <div className="space-y-1.5">
                 <label className="block text-[11px] sm:text-xs font-medium text-slate-700">
-                  Upload Resume (optional)
+                  Email
                 </label>
-                <div className="relative flex items-center justify-between gap-3 rounded-lg border border-dashed border-slate-300 bg-slate-50 px-3 py-2.5">
-                  <div className="flex flex-col">
-                    <span className="text-[11px] sm:text-xs text-slate-700">
-                      PDF / DOC up to 5 MB
-                    </span>
-                    <span className="text-[10px] sm:text-[11px] text-slate-500 mt-0.5 line-clamp-1">
-                      {resumeFile ? resumeFile.name : 'No file chosen yet'}
-                    </span>
-                  </div>
-                  <label className="inline-flex cursor-pointer items-center rounded-full bg-suzuki-blue px-3 py-1.5 text-[11px] sm:text-xs font-semibold text-white shadow-md hover:bg-suzuki-blue/90 active:scale-95 transition">
-                    <span>Choose File</span>
-                    <input
-                      type="file"
-                      accept=".pdf,.doc,.docx"
-                      className="hidden"
-                      onChange={(e) => {
-                        const file = e.target.files?.[0]
-                        if (file) setResumeFile(file)
-                      }}
-                    />
-                  </label>
-                </div>
+                <input
+                  type="email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  className={`w-full rounded-lg border bg-white px-3 py-2 text-sm text-slate-900 outline-none focus:ring-2 ${errors.email
+                    ? 'border-red-500 focus:border-red-500 focus:ring-red-200'
+                    : 'border-slate-300 focus:border-suzuki-blue focus:ring-suzuki-blue/30'
+                    }`}
+                />
+                {errors.email && <p className="text-[10px] text-red-500">{errors.email}</p>}
               </div>
+            </div>
 
-              {formMessage && (
-                <p className="text-[11px] sm:text-xs text-slate-700">
-                  {formMessage}
-                </p>
-              )}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="space-y-1.5">
+                <label className="block text-[11px] sm:text-xs font-medium text-slate-700">
+                  Phone
+                </label>
+                <input
+                  type="tel"
+                  name="phone"
+                  value={formData.phone}
+                  onChange={handleChange}
+                  className={`w-full rounded-lg border bg-white px-3 py-2 text-sm text-slate-900 outline-none focus:ring-2 ${errors.phone
+                    ? 'border-red-500 focus:border-red-500 focus:ring-red-200'
+                    : 'border-slate-300 focus:border-suzuki-blue focus:ring-suzuki-blue/30'
+                    }`}
+                />
+                {errors.phone && <p className="text-[10px] text-red-500">{errors.phone}</p>}
+              </div>
+              <div className="space-y-1.5">
+                <label className="block text-[11px] sm:text-xs font-medium text-slate-700">
+                  Position
+                </label>
+                <select
+                  name="position"
+                  value={formData.position}
+                  onChange={handleChange}
+                  className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 outline-none focus:border-suzuki-blue focus:ring-2 focus:ring-suzuki-blue/30"
+                >
+                  {positions.map((pos) => (
+                    <option key={pos.id} value={pos.id}>
+                      {pos.title}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
 
-              <motion.button
-                type="submit"
-                disabled={isSubmitting}
-                whileHover={{ scale: isSubmitting ? 1 : 1.03 }}
-                whileTap={{ scale: isSubmitting ? 1 : 0.97 }}
-                className="mt-1 w-full rounded-lg bg-suzuki-red px-4 py-3 text-sm sm:text-base font-semibold text-white shadow-[0_18px_45px_rgba(220,38,38,0.55)] hover:bg-red-600 disabled:cursor-not-allowed disabled:opacity-70"
+            <div className="space-y-1.5">
+              <label className="block text-[11px] sm:text-xs font-medium text-slate-700">
+                Address
+              </label>
+              <textarea
+                name="address"
+                rows={3}
+                value={formData.address}
+                onChange={handleChange}
+                className={`w-full rounded-lg border bg-white px-3 py-2 text-sm text-slate-900 outline-none focus:ring-2 resize-none ${errors.address
+                  ? 'border-red-500 focus:border-red-500 focus:ring-red-200'
+                  : 'border-slate-300 focus:border-suzuki-blue focus:ring-suzuki-blue/30'
+                  }`}
+              />
+              {errors.address && <p className="text-[10px] text-red-500">{errors.address}</p>}
+            </div>
+
+            <div className="space-y-1.5">
+              <label className="block text-[11px] sm:text-xs font-medium text-slate-700">
+                Upload Resume <span className="text-red-500">*</span>
+              </label>
+              <div className={`relative flex items-center justify-between gap-3 rounded-lg border border-dashed bg-slate-50 px-3 py-2.5 ${errors.resume ? 'border-red-500 bg-red-50' : 'border-slate-300'
+                }`}>
+                <div className="flex flex-col">
+                  <span className="text-[11px] sm:text-xs text-slate-700">
+                    PDF / DOC up to 5 MB
+                  </span>
+                  <span className={`text-[10px] sm:text-[11px] mt-0.5 line-clamp-1 ${errors.resume ? 'text-red-600 font-medium' : 'text-slate-500'}`}>
+                    {resumeFile ? resumeFile.name : (errors.resume ? 'Resume is required' : 'No file chosen yet')}
+                  </span>
+                </div>
+                <label className="inline-flex cursor-pointer items-center rounded-full bg-suzuki-blue px-3 py-1.5 text-[11px] sm:text-xs font-semibold text-white shadow-md hover:bg-suzuki-blue/90 active:scale-95 transition">
+                  <span>Choose File</span>
+                  <input
+                    type="file"
+                    accept=".pdf,.doc,.docx"
+                    className="hidden"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0]
+                      handleFileChange(file || null)
+                    }}
+                  />
+                </label>
+              </div>
+            </div>
+
+            {formMessage && (
+              <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className={`rounded-lg p-4 text-sm font-medium ${formMessage.includes('successfully')
+                  ? 'bg-emerald-100 text-emerald-800 border border-emerald-200'
+                  : (formMessage.includes('wrong') || formMessage.includes('Network') ? 'bg-red-50 text-red-600 border border-red-200' : 'bg-slate-50 text-slate-700 border border-slate-200')
+                  }`}
               >
-                {isSubmitting ? 'Submitting…' : 'Submit Application'}
-              </motion.button>
-              <p className="mt-1 text-[10px] sm:text-[11px] text-slate-500">
-                By submitting, you agree that your details will be shared with Adharvaa Suzuki HR
-                for recruitment purposes.
-              </p>
-            </form>
-          </motion.div>
+                <div className="flex items-center gap-2">
+                  {formMessage.includes('successfully') && (
+                    <span className="flex h-5 w-5 items-center justify-center rounded-full bg-emerald-500 text-white text-xs">✓</span>
+                  )}
+                  {formMessage}
+                </div>
+              </motion.div>
+            )}
+
+            <motion.button
+              type="submit"
+              disabled={isSubmitting}
+              whileHover={{ scale: isSubmitting ? 1 : 1.03 }}
+              whileTap={{ scale: isSubmitting ? 1 : 0.97 }}
+              className="mt-1 w-full rounded-lg bg-suzuki-blue px-4 py-3 text-sm sm:text-base font-semibold text-white shadow-[0_18px_45px_rgba(37,99,235,0.4)] hover:bg-blue-600 disabled:cursor-not-allowed disabled:opacity-70"
+            >
+              {isSubmitting ? 'Submitting…' : 'Submit Application'}
+            </motion.button>
+            <p className="mt-1 text-[10px] sm:text-[11px] text-slate-500">
+              By submitting, you agree that your details will be shared with Adharvaa Suzuki HR
+              for recruitment purposes.
+            </p>
+          </form>
+        </motion.div>
       </section>
     </div>
   )
 }
-

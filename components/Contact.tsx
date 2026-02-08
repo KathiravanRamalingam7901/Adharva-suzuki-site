@@ -12,6 +12,7 @@ type Branch = {
   phone2?: string
   email: string
   mapUrl: string
+  openingHours?: string
 }
 
 const branches: Branch[] = [
@@ -23,6 +24,7 @@ const branches: Branch[] = [
     phone: '+91-89400 57000',
     email: 'service.suzuki@adharvaa.in',
     mapUrl: 'https://maps.app.goo.gl/AZ4mEe6abYyzsp5e8',
+    openingHours: 'Mon–Sat 9:30am–7:30pm',
   },
   {
     id: 'kinathukadavu',
@@ -32,6 +34,7 @@ const branches: Branch[] = [
     phone: '+91-81240 13400',
     email: 'kkd.suzuki@adharvaa.in',
     mapUrl: 'https://maps.app.goo.gl/pCpAjS9D17vLzMHc7',
+    openingHours: 'Mon–Sat 9:30am–7:30pm',
   },
   {
     id: 'udumalaipettai',
@@ -41,6 +44,7 @@ const branches: Branch[] = [
     phone: '+91-81240 26000',
     email: 'upt.suzuki@adharvaa.in',
     mapUrl: 'https://maps.app.goo.gl/KkokSg12duXAZS6A6',
+    openingHours: 'Mon–Sat 9:30am–7:30pm',
   },
   {
     id: 'coimbatore-sundarapuram',
@@ -50,6 +54,7 @@ const branches: Branch[] = [
     phone: '+91- 89400 53700',
     email: 'service.suzuki@adharvaa.in',
     mapUrl: 'https://maps.app.goo.gl/sgQ4yuYH7ohevsxw7',
+    openingHours: 'Mon–Sat 9:30am–7:30pm',
   },
   {
     id: 'coimbatore-avinashi-service',
@@ -59,16 +64,18 @@ const branches: Branch[] = [
     phone: '+91-89400 57111',
     email: 'service.suzuki@adharvaa.in',
     mapUrl: 'https://www.google.com/maps/place/Adharvaa+Suzuki+-+Service+Centre/@11.0160272,76.9912583,15z/data=!4m6!3m5!1s0x3ba8598168e9b355:0x21dcbcf0b5723b99!8m2!3d11.0160272!4d76.9912583!16s%2Fg%2F11sjvsf8vk?entry=ttu',
+    openingHours: 'Mon–Sat 9:30am–7:30pm',
   },
   {
     id: 'dharapuram',
     name: 'Dharapuram',
-    showroomName: 'Adharvaa Suzuki Service Centre',
+    showroomName: 'Adharvaa Suzuki Showroom & Service Centre',
     address: 'Nehru Nagar, Bypass Road, Opp Reliance Petrol Bunk, Dharapuram - 56',
     phone: '+91-89400 20000',
     phone2: '+91 89400 33600',
     email: 'service.suzuki@adharvaa.in',
     mapUrl: 'https://maps.app.goo.gl/19xbBpqu2zcfThXe8',
+    openingHours: 'Mon–Sat 9:30am–7:30pm',
   },
 ]
 
@@ -76,10 +83,12 @@ const models = [
   'Access 125',
   'Avenis',
   'Gixxer SF 250',
+  'Gixxer 250',
   'Gixxer SF',
+  'Gixxer',
+  'V-STROM SX',
   'Burgman Street',
   'Burgman Street EX',
-  'V-STROM SX',
 ]
 
 export default function Contact() {
@@ -88,7 +97,6 @@ export default function Contact() {
     mobileNumber: '',
     model: '',
     email: '',
-    address: '',
     message: '',
     preferredBranch: '',
   })
@@ -100,40 +108,31 @@ export default function Contact() {
   const validateForm = (): boolean => {
     const newErrors: Record<string, string> = {}
 
-    // Name validation
+    // Name validation: only allow letters, spaces, and dots
     if (!formData.name.trim()) {
       newErrors.name = 'Name is required'
-    } else if (formData.name.trim().length < 2) {
-      newErrors.name = 'Name must be at least 2 characters'
+    } else if (!/^[a-zA-Z\s\.]+$/.test(formData.name)) {
+      newErrors.name = 'Name should only contain letters and spaces' // Matching Careers page style
     }
 
-    // Mobile Number validation
-    const mobileRegex = /^[6-9]\d{9}$/
+    // Mobile Number validation: exactly 10 digits
     const cleanedMobile = formData.mobileNumber.replace(/\D/g, '')
     if (!formData.mobileNumber.trim()) {
       newErrors.mobileNumber = 'Mobile number is required'
-    } else if (!mobileRegex.test(cleanedMobile) || cleanedMobile.length !== 10) {
-      newErrors.mobileNumber = 'Please enter a valid 10-digit mobile number'
+    } else if (!/^\d{10}$/.test(cleanedMobile)) {
+      newErrors.mobileNumber = 'Mobile number must be 10 digits' // Matching Careers page style
     }
 
     // Email validation
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
     if (!formData.email.trim()) {
       newErrors.email = 'Email is required'
-    } else if (!emailRegex.test(formData.email)) {
-      newErrors.email = 'Please enter a valid email address'
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+      newErrors.email = 'Invalid email address' // Matching Careers page style
     }
 
     // Model validation
     if (!formData.model) {
       newErrors.model = 'Please select a model'
-    }
-
-    // Address validation
-    if (!formData.address.trim()) {
-      newErrors.address = 'Address is required'
-    } else if (formData.address.trim().length < 10) {
-      newErrors.address = 'Address must be at least 10 characters'
     }
 
     // Message validation
@@ -149,8 +148,7 @@ export default function Contact() {
     }
 
     setErrors(newErrors)
-    const isValid = Object.keys(newErrors).length === 0
-    return isValid
+    return Object.keys(newErrors).length === 0
   }
 
   const handleChange = (
@@ -160,7 +158,11 @@ export default function Contact() {
     setFormData((prev) => ({ ...prev, [name]: value }))
     // Clear error when user starts typing
     if (errors[name]) {
-      setErrors((prev) => ({ ...prev, [name]: '' }))
+      setErrors((prev) => {
+        const newErrors = { ...prev }
+        delete newErrors[name]
+        return newErrors
+      })
     }
   }
 
@@ -177,75 +179,17 @@ export default function Contact() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setFormMessage(null)
-    
-    // Validate and get errors directly
-    const newErrors: Record<string, string> = {}
 
-    // Name validation
-    if (!formData.name.trim()) {
-      newErrors.name = 'Name is required'
-    } else if (formData.name.trim().length < 2) {
-      newErrors.name = 'Name must be at least 2 characters'
-    }
+    if (!validateForm()) {
+      setFormMessage('Please fix the errors highlighted in red.')
 
-    // Mobile Number validation
-    const mobileRegex = /^[6-9]\d{9}$/
-    const cleanedMobile = formData.mobileNumber.replace(/\D/g, '')
-    if (!formData.mobileNumber.trim()) {
-      newErrors.mobileNumber = 'Mobile number is required'
-    } else if (!mobileRegex.test(cleanedMobile) || cleanedMobile.length !== 10) {
-      newErrors.mobileNumber = 'Please enter a valid 10-digit mobile number'
-    }
-
-    // Email validation
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-    if (!formData.email.trim()) {
-      newErrors.email = 'Email is required'
-    } else if (!emailRegex.test(formData.email)) {
-      newErrors.email = 'Please enter a valid email address'
-    }
-
-    // Model validation
-    if (!formData.model) {
-      newErrors.model = 'Please select a model'
-    }
-
-    // Address validation
-    if (!formData.address.trim()) {
-      newErrors.address = 'Address is required'
-    } else if (formData.address.trim().length < 10) {
-      newErrors.address = 'Address must be at least 10 characters'
-    }
-
-    // Message validation
-    if (!formData.message.trim()) {
-      newErrors.message = 'Message is required'
-    } else if (formData.message.trim().length < 10) {
-      newErrors.message = 'Message must be at least 10 characters'
-    }
-
-    // Preferred Branch validation
-    if (!formData.preferredBranch) {
-      newErrors.preferredBranch = 'Please select a preferred branch'
-    }
-
-    setErrors(newErrors)
-    const isValid = Object.keys(newErrors).length === 0
-    
-    if (!isValid) {
-      // Scroll to first error field
-      const firstErrorField = Object.keys(newErrors)[0]
-      if (firstErrorField) {
-        setTimeout(() => {
-          const element = document.querySelector(`[name="${firstErrorField}"]`)
-          if (element) {
-            element.scrollIntoView({ behavior: 'smooth', block: 'center' })
-            ;(element as HTMLElement).focus()
-          }
-        }, 100)
+      // Scroll to first error
+      const firstErrorField = Object.keys(errors)[0] || 'name' // Fallback
+      const element = document.querySelector(`[name="${firstErrorField}"]`)
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth', block: 'center' })
+          ; (element as HTMLElement).focus()
       }
-      setFormMessage(`Please correct the ${Object.keys(newErrors).length} error(s) in the form.`)
-      setIsSubmitting(false)
       return
     }
 
@@ -253,34 +197,57 @@ export default function Contact() {
 
     try {
       const selectedBranch = branches.find((b) => b.id === formData.preferredBranch)
+      // We identify the branch email, but for now we use the testing email as requested.
       const branchEmail = selectedBranch?.email || 'service.suzuki@adharvaa.in'
+      const branchName = selectedBranch?.name || 'General Inquiry'
 
-      const res = await fetch('/api/contact', {
+      // FormSubmit.co Configuration
+      // Production: Use the branch email as the target
+      const TARGET_EMAIL = branchEmail
+      const endpoint = `https://formsubmit.co/${TARGET_EMAIL}`
+
+      const formDataToSend = new FormData()
+      formDataToSend.append('Customer Name', formData.name)
+      formDataToSend.append('Mobile Number', formData.mobileNumber)
+      formDataToSend.append('Interested Model', formData.model || 'Not Selected')
+      formDataToSend.append('Email Address', formData.email)
+      formDataToSend.append('Preferred Branch', branchName)
+      // formDataToSend.append('Branch Email', branchEmail) // Info for the receiver
+      formDataToSend.append('Message', formData.message)
+
+      // Special FormSubmit settings
+      formDataToSend.append('_subject', `New Quote Request: ${formData.model} - ${formData.name}`)
+      formDataToSend.append('_captcha', 'false')
+      formDataToSend.append('_template', 'table')
+      formDataToSend.append('_order', 'Customer Name,Mobile Number,Email Address,Interested Model,Preferred Branch,Message')
+      // formDataToSend.append('_cc', branchEmail) // Optional: Send copy to branch if needed later
+
+      const response = await fetch(endpoint, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          ...formData,
-          branchEmail,
-          branchName: selectedBranch?.name || 'General Inquiry',
-        }),
+        body: formDataToSend,
+        headers: {
+          'Accept': 'application/json'
+        }
       })
 
-      if (!res.ok) {
-        throw new Error('Failed to submit')
+      if (response.ok) {
+        setFormMessage('Thank you! Your quote request has been submitted successfully.')
+        setFormData({
+          name: '',
+          mobileNumber: '',
+          model: '',
+          email: '',
+          message: '',
+          preferredBranch: '',
+        })
+      } else {
+        const data = await response.json().catch(() => ({}))
+        console.error('FormSubmit Error:', data)
+        setFormMessage('Something went wrong. Please try again.')
       }
-
-      setFormMessage('Thank you for your inquiry! We will get back to you soon.')
-      setFormData({
-        name: '',
-        mobileNumber: '',
-        model: '',
-        email: '',
-        address: '',
-        message: '',
-        preferredBranch: '',
-      })
     } catch (error) {
-      setFormMessage('Something went wrong. Please try again in a moment.')
+      console.error('Submission error:', error)
+      setFormMessage('Network error. Please try again later.')
     } finally {
       setIsSubmitting(false)
     }
@@ -299,7 +266,7 @@ export default function Contact() {
         <div className="absolute -right-20 top-10 w-64 h-64 bg-suzuki-red/10 blur-3xl rounded-full" />
         <div className="absolute -left-24 -bottom-12 w-72 h-72 bg-blue-500/10 blur-3xl rounded-full" />
 
-        <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20 text-center">
+        <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-20 md:py-24 text-center">
           <motion.p
             className="text-xs uppercase tracking-[0.25em] text-suzuki-blue mb-3"
             initial={{ opacity: 0, y: 10 }}
@@ -378,11 +345,11 @@ export default function Contact() {
               </div>
 
               {/* Branch Content */}
-              <div className="flex-1 p-4 sm:p-5 md:p-6 space-y-3 sm:space-y-4">
+              <div className="flex-1 px-4 sm:px-5 md:px-6 py-2 sm:py-3 space-y-3 sm:space-y-4">
                 {/* Address with Copy */}
                 <div className="space-y-1.5">
                   <div className="flex items-start justify-between gap-2">
-                    <p className="text-[11px] sm:text-xs text-slate-600 leading-relaxed flex-1">
+                    <p className="text-[6px] sm:text-xs text-slate-600 leading-relaxed flex-1">
                       {branch.address}
                     </p>
                     <motion.button
@@ -478,6 +445,28 @@ export default function Contact() {
                   </a>
                 </div>
 
+                {/* Opening Hours */}
+                {branch.openingHours && (
+                  <div className="flex items-center gap-2 mb-1">
+                    <svg
+                      className="w-4 h-4 text-suzuki-blue flex-shrink-0"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                      />
+                    </svg>
+                    <span className="text-[11px] sm:text-xs text-slate-600 font-medium whitespace-nowrap">
+                      {branch.openingHours}
+                    </span>
+                  </div>
+                )}
+
                 {/* View on Map Button */}
                 <motion.a
                   href={branch.mapUrl}
@@ -532,13 +521,13 @@ export default function Contact() {
           </div>
 
           <h2 className="text-lg sm:text-xl md:text-2xl font-bold mb-1.5 sm:mb-2">
-            Send us a Message
+            Get a Quote
           </h2>
           <p className="text-[11px] sm:text-xs text-slate-600 mb-4 sm:mb-6">
-            Fill out the form below and we'll get back to you at your preferred branch.
+            Fill out the form below to receive a customized quote for your dream bike.
           </p>
 
-          <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-5">
+          <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-5" noValidate>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <motion.div
                 className="space-y-1.5"
@@ -556,11 +545,10 @@ export default function Contact() {
                   required
                   value={formData.name}
                   onChange={handleChange}
-                  className={`w-full rounded-lg border bg-white px-3 py-2 text-sm text-slate-900 outline-none focus:ring-2 transition-all ${
-                    errors.name
-                      ? 'border-red-500 focus:border-red-500 focus:ring-red-500/30'
-                      : 'border-slate-300 focus:border-suzuki-blue focus:ring-suzuki-blue/30'
-                  }`}
+                  className={`w-full rounded-lg border bg-white px-3 py-2 text-sm text-slate-900 outline-none focus:ring-2 transition-all ${errors.name
+                    ? 'border-red-500 focus:border-red-500 focus:ring-red-500/30'
+                    : 'border-slate-300 focus:border-suzuki-blue focus:ring-suzuki-blue/30'
+                    }`}
                   whileFocus={{ scale: 1.01, boxShadow: '0 0 0 3px rgba(37,99,235,0.1)' }}
                 />
                 {errors.name && (
@@ -590,11 +578,10 @@ export default function Contact() {
                   value={formData.mobileNumber}
                   onChange={handleChange}
                   maxLength={10}
-                  className={`w-full rounded-lg border bg-white px-3 py-2 text-sm text-slate-900 outline-none focus:ring-2 transition-all ${
-                    errors.mobileNumber
-                      ? 'border-red-500 focus:border-red-500 focus:ring-red-500/30'
-                      : 'border-slate-300 focus:border-suzuki-blue focus:ring-suzuki-blue/30'
-                  }`}
+                  className={`w-full rounded-lg border bg-white px-3 py-2 text-sm text-slate-900 outline-none focus:ring-2 transition-all ${errors.mobileNumber
+                    ? 'border-red-500 focus:border-red-500 focus:ring-red-500/30'
+                    : 'border-slate-300 focus:border-suzuki-blue focus:ring-suzuki-blue/30'
+                    }`}
                   whileFocus={{ scale: 1.01, boxShadow: '0 0 0 3px rgba(37,99,235,0.1)' }}
                 />
                 {errors.mobileNumber && (
@@ -625,11 +612,10 @@ export default function Contact() {
                   required
                   value={formData.model}
                   onChange={handleChange}
-                  className={`w-full rounded-lg border bg-white px-3 py-2 text-sm text-slate-900 outline-none focus:ring-2 transition-all ${
-                    errors.model
-                      ? 'border-red-500 focus:border-red-500 focus:ring-red-500/30'
-                      : 'border-slate-300 focus:border-suzuki-blue focus:ring-suzuki-blue/30'
-                  }`}
+                  className={`w-full rounded-lg border bg-white px-3 py-2 text-sm text-slate-900 outline-none focus:ring-2 transition-all ${errors.model
+                    ? 'border-red-500 focus:border-red-500 focus:ring-red-500/30'
+                    : 'border-slate-300 focus:border-suzuki-blue focus:ring-suzuki-blue/30'
+                    }`}
                   whileFocus={{ scale: 1.01, boxShadow: '0 0 0 3px rgba(37,99,235,0.1)' }}
                 >
                   <option value="">Select Model</option>
@@ -665,11 +651,10 @@ export default function Contact() {
                   required
                   value={formData.email}
                   onChange={handleChange}
-                  className={`w-full rounded-lg border bg-white px-3 py-2 text-sm text-slate-900 outline-none focus:ring-2 transition-all ${
-                    errors.email
-                      ? 'border-red-500 focus:border-red-500 focus:ring-red-500/30'
-                      : 'border-slate-300 focus:border-suzuki-blue focus:ring-suzuki-blue/30'
-                  }`}
+                  className={`w-full rounded-lg border bg-white px-3 py-2 text-sm text-slate-900 outline-none focus:ring-2 transition-all ${errors.email
+                    ? 'border-red-500 focus:border-red-500 focus:ring-red-500/30'
+                    : 'border-slate-300 focus:border-suzuki-blue focus:ring-suzuki-blue/30'
+                    }`}
                   whileFocus={{ scale: 1.01, boxShadow: '0 0 0 3px rgba(37,99,235,0.1)' }}
                 />
                 {errors.email && (
@@ -699,11 +684,10 @@ export default function Contact() {
                 required
                 value={formData.preferredBranch}
                 onChange={handleChange}
-                className={`w-full rounded-lg border bg-white px-3 py-2 text-sm text-slate-900 outline-none focus:ring-2 transition-all ${
-                  errors.preferredBranch
-                    ? 'border-red-500 focus:border-red-500 focus:ring-red-500/30'
-                    : 'border-slate-300 focus:border-suzuki-blue focus:ring-suzuki-blue/30'
-                }`}
+                className={`w-full rounded-lg border bg-white px-3 py-2 text-sm text-slate-900 outline-none focus:ring-2 transition-all ${errors.preferredBranch
+                  ? 'border-red-500 focus:border-red-500 focus:ring-red-500/30'
+                  : 'border-slate-300 focus:border-suzuki-blue focus:ring-suzuki-blue/30'
+                  }`}
                 whileFocus={{ scale: 1.01, boxShadow: '0 0 0 3px rgba(37,99,235,0.1)' }}
               >
                 <option value="">Select Branch</option>
@@ -729,40 +713,6 @@ export default function Contact() {
               initial={{ opacity: 0, y: 10 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ delay: 0.35 }}
-            >
-              <label className="block text-[11px] sm:text-xs font-medium text-slate-700">
-                Address
-              </label>
-              <motion.textarea
-                name="address"
-                required
-                rows={3}
-                value={formData.address}
-                onChange={handleChange}
-                className={`w-full rounded-lg border bg-white px-3 py-2 text-sm text-slate-900 outline-none focus:ring-2 resize-none transition-all ${
-                  errors.address
-                    ? 'border-red-500 focus:border-red-500 focus:ring-red-500/30'
-                    : 'border-slate-300 focus:border-suzuki-blue focus:ring-suzuki-blue/30'
-                }`}
-                whileFocus={{ scale: 1.01, boxShadow: '0 0 0 3px rgba(37,99,235,0.1)' }}
-              />
-              {errors.address && (
-                <motion.p
-                  initial={{ opacity: 0, y: -5 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="text-xs text-red-600 mt-1"
-                >
-                  {errors.address}
-                </motion.p>
-              )}
-            </motion.div>
-
-            <motion.div
-              className="space-y-1.5"
-              initial={{ opacity: 0, y: 10 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
               transition={{ delay: 0.4 }}
             >
               <label className="block text-[11px] sm:text-xs font-medium text-slate-700">
@@ -774,11 +724,10 @@ export default function Contact() {
                 rows={4}
                 value={formData.message}
                 onChange={handleChange}
-                className={`w-full rounded-lg border bg-white px-3 py-2 text-sm text-slate-900 outline-none focus:ring-2 resize-none transition-all ${
-                  errors.message
-                    ? 'border-red-500 focus:border-red-500 focus:ring-red-500/30'
-                    : 'border-slate-300 focus:border-suzuki-blue focus:ring-suzuki-blue/30'
-                }`}
+                className={`w-full rounded-lg border bg-white px-3 py-2 text-sm text-slate-900 outline-none focus:ring-2 resize-none transition-all ${errors.message
+                  ? 'border-red-500 focus:border-red-500 focus:ring-red-500/30'
+                  : 'border-slate-300 focus:border-suzuki-blue focus:ring-suzuki-blue/30'
+                  }`}
                 whileFocus={{ scale: 1.01, boxShadow: '0 0 0 3px rgba(37,99,235,0.1)' }}
               />
               {errors.message && (
@@ -807,34 +756,16 @@ export default function Contact() {
               disabled={isSubmitting}
               whileHover={{ scale: isSubmitting ? 1 : 1.03 }}
               whileTap={{ scale: isSubmitting ? 1 : 0.97 }}
-              className="mt-1 w-full rounded-lg bg-suzuki-red px-4 py-3 text-sm sm:text-base font-semibold text-white shadow-[0_18px_45px_rgba(220,38,38,0.55)] hover:bg-red-600 disabled:cursor-not-allowed disabled:opacity-70 flex items-center justify-center gap-2"
+              className="mt-2 w-full rounded-lg bg-suzuki-blue px-4 py-3 text-sm sm:text-base font-semibold text-white shadow-[0_18px_45px_rgba(37,99,235,0.4)] hover:bg-blue-600 disabled:cursor-not-allowed disabled:opacity-70 transition-all"
             >
-              {isSubmitting ? (
-                <>
-                  <motion.span
-                    animate={{ rotate: 360 }}
-                    transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
-                    className="inline-block"
-                  >
-                    ⟳
-                  </motion.span>
-                  <span>Sending...</span>
-                </>
-              ) : (
-                <>
-                  <span>Send Message</span>
-                  <motion.span
-                    animate={{ x: [0, 4, 0] }}
-                    transition={{ duration: 1.2, repeat: Infinity }}
-                  >
-                    ➜
-                  </motion.span>
-                </>
-              )}
+              {isSubmitting ? 'Sending Request…' : 'Get Quote'}
             </motion.button>
+            <p className="mt-3 text-center text-[10px] sm:text-[11px] text-slate-500">
+              By submitting this form, you agree to be contacted by Adharvaa Suzuki for this quote request.
+            </p>
           </form>
         </motion.div>
       </section>
-    </div>
+    </div >
   )
 }
