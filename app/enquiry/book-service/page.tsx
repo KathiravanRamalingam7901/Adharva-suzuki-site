@@ -9,11 +9,17 @@ export default function BookServicePage() {
     name: '',
     phone: '',
     email: '',
-    vehicleNumber: '',
-    vehicleModel: '',
+    vehicleRegistrationNumber: '',
+    model: '',
     serviceType: '',
-    preferredDate: '',
+    serviceRequestedDate: '',
     location: '',
+    kmsCovered: '',
+    pickupRequired: 'No',
+    address: '',
+    city: '',
+    pincode: '',
+    message: '',
   })
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -29,27 +35,35 @@ export default function BookServicePage() {
     }
 
     if (!formData.phone.trim()) {
-      newErrors.phone = 'Phone number is required'
+      newErrors.phone = 'Mobile number is required'
     } else if (!/^\d{10}$/.test(formData.phone.replace(/\D/g, ''))) {
-      newErrors.phone = 'Please enter a valid 10-digit phone number'
+      newErrors.phone = 'Please enter a valid 10-digit mobile number'
     }
 
     if (formData.email.trim() && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
       newErrors.email = 'Invalid email address'
     }
 
-    if (!formData.vehicleNumber.trim()) newErrors.vehicleNumber = 'Required'
-    if (!formData.vehicleModel) newErrors.vehicleModel = 'Required'
+    if (!formData.vehicleRegistrationNumber.trim()) newErrors.vehicleRegistrationNumber = 'Required'
+    if (!formData.model) newErrors.model = 'Required'
     if (!formData.serviceType) newErrors.serviceType = 'Required'
-    if (!formData.preferredDate) {
-      newErrors.preferredDate = 'Required'
+    if (!formData.serviceRequestedDate) {
+      newErrors.serviceRequestedDate = 'Required'
     } else {
-      const selectedDate = new Date(formData.preferredDate)
+      const selectedDate = new Date(formData.serviceRequestedDate)
       const today = new Date()
       today.setHours(0, 0, 0, 0)
-      if (selectedDate < today) newErrors.preferredDate = 'Cannot be in past'
+      if (selectedDate < today) newErrors.serviceRequestedDate = 'Cannot be in past'
     }
     if (!formData.location.trim()) newErrors.location = 'Required'
+    if (!formData.kmsCovered.trim()) newErrors.kmsCovered = 'Required'
+    if (!formData.address.trim()) newErrors.address = 'Required'
+    if (!formData.city.trim()) newErrors.city = 'Required'
+    if (!formData.pincode.trim()) {
+      newErrors.pincode = 'Required'
+    } else if (!/^\d{6}$/.test(formData.pincode)) {
+      newErrors.pincode = 'Invalid pincode'
+    }
 
     setErrors(newErrors)
     return Object.keys(newErrors).length === 0
@@ -86,16 +100,21 @@ export default function BookServicePage() {
 
       const formDataToSend = new FormData()
       formDataToSend.append('Enquiry Type', 'Book Service')
-      formDataToSend.append('Full Name', formData.name)
-      formDataToSend.append('Phone Number', formData.phone)
-      formDataToSend.append('Email Address', formData.email || 'Not Provided')
-      formDataToSend.append('Vehicle Number', formData.vehicleNumber)
-      formDataToSend.append('Vehicle Model', formData.vehicleModel)
-      formDataToSend.append('Service Type', formData.serviceType)
-      formDataToSend.append('Preferred Date', formData.preferredDate)
+      formDataToSend.append('Name', formData.name)
+      formDataToSend.append('Mobile Number', formData.phone)
+      formDataToSend.append('Email ID', formData.email || 'Not Provided')
+      formDataToSend.append('Model', formData.model)
+      formDataToSend.append('Service Requested Date', formData.serviceRequestedDate)
+      formDataToSend.append('Vehicle Registration Number', formData.vehicleRegistrationNumber)
+      formDataToSend.append('Vehicle Pick up Required', formData.pickupRequired)
+      formDataToSend.append('Kilometer Covered', formData.kmsCovered)
+      formDataToSend.append('Address', formData.address)
+      formDataToSend.append('City', formData.city)
+      formDataToSend.append('Pincode', formData.pincode)
       formDataToSend.append('Preferred Location', formData.location)
+      formDataToSend.append('Message', formData.message || 'No additional message')
 
-      formDataToSend.append('_subject', `New Service Booking: ${formData.vehicleNumber} from ${formData.name}`)
+      formDataToSend.append('_subject', `New Service Booking: ${formData.vehicleRegistrationNumber} - ${formData.model} from ${formData.name}`)
       formDataToSend.append('_captcha', 'false')
       formDataToSend.append('_template', 'table')
 
@@ -111,11 +130,17 @@ export default function BookServicePage() {
           name: '',
           phone: '',
           email: '',
-          vehicleNumber: '',
-          vehicleModel: '',
+          vehicleRegistrationNumber: '',
+          model: '',
           serviceType: '',
-          preferredDate: '',
+          serviceRequestedDate: '',
           location: '',
+          kmsCovered: '',
+          pickupRequired: 'No',
+          address: '',
+          city: '',
+          pincode: '',
+          message: '',
         })
       } else {
         setFormMessage('Something went wrong. Please try again later.')
@@ -180,21 +205,21 @@ export default function BookServicePage() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* Name */}
                 <div>
-                  <label className="block text-sm font-semibold text-slate-700 mb-2">Full Name *</label>
+                  <label className="block text-sm font-semibold text-slate-700 mb-2">Name *</label>
                   <input
                     type="text"
                     name="name"
                     value={formData.name}
                     onChange={handleChange}
                     className={`w-full px-4 py-3 rounded-lg border ${errors.name ? 'border-red-500 bg-red-50' : 'border-slate-200 bg-slate-50'} focus:outline-none focus:ring-2 focus:ring-suzuki-blue/20 transition-all`}
-                    placeholder="Ente your name"
+                    placeholder="Enter your name"
                   />
                   {errors.name && <p className="mt-1 text-xs text-red-500">{errors.name}</p>}
                 </div>
 
-                {/* Phone */}
+                {/* Mobile Number */}
                 <div>
-                  <label className="block text-sm font-semibold text-slate-700 mb-2">Phone Number *</label>
+                  <label className="block text-sm font-semibold text-slate-700 mb-2">Mobile Number *</label>
                   <input
                     type="tel"
                     name="phone"
@@ -206,28 +231,28 @@ export default function BookServicePage() {
                   {errors.phone && <p className="mt-1 text-xs text-red-500">{errors.phone}</p>}
                 </div>
 
-                {/* Vehicle Number */}
+                {/* Email ID */}
                 <div>
-                  <label className="block text-sm font-semibold text-slate-700 mb-2">Vehicle Number *</label>
+                  <label className="block text-sm font-semibold text-slate-700 mb-2">Email ID</label>
                   <input
-                    type="text"
-                    name="vehicleNumber"
-                    value={formData.vehicleNumber}
+                    type="email"
+                    name="email"
+                    value={formData.email}
                     onChange={handleChange}
-                    className={`w-full px-4 py-3 rounded-lg border ${errors.vehicleNumber ? 'border-red-500 bg-red-50' : 'border-slate-200 bg-slate-50'} focus:outline-none focus:ring-2 focus:ring-suzuki-blue/20 transition-all`}
-                    placeholder="e.g. TN 37 AB 1234"
+                    className={`w-full px-4 py-3 rounded-lg border ${errors.email ? 'border-red-500 bg-red-50' : 'border-slate-200 bg-slate-50'} focus:outline-none focus:ring-2 focus:ring-suzuki-blue/20 transition-all`}
+                    placeholder="Enter email (optional)"
                   />
-                  {errors.vehicleNumber && <p className="mt-1 text-xs text-red-500">{errors.vehicleNumber}</p>}
+                  {errors.email && <p className="mt-1 text-xs text-red-500">{errors.email}</p>}
                 </div>
 
-                {/* Vehicle Model */}
+                {/* Model */}
                 <div>
-                  <label className="block text-sm font-semibold text-slate-700 mb-2">Vehicle Model *</label>
+                  <label className="block text-sm font-semibold text-slate-700 mb-2">Model *</label>
                   <select
-                    name="vehicleModel"
-                    value={formData.vehicleModel}
+                    name="model"
+                    value={formData.model}
                     onChange={handleChange}
-                    className={`w-full px-4 py-3 rounded-lg border ${errors.vehicleModel ? 'border-red-500 bg-red-50' : 'border-slate-200 bg-slate-50'} focus:outline-none focus:ring-2 focus:ring-suzuki-blue/20 transition-all`}
+                    className={`w-full px-4 py-3 rounded-lg border ${errors.model ? 'border-red-500 bg-red-50' : 'border-slate-200 bg-slate-50'} focus:outline-none focus:ring-2 focus:ring-suzuki-blue/20 transition-all`}
                   >
                     <option value="">Select Model</option>
                     <option>Access 125</option>
@@ -239,8 +264,22 @@ export default function BookServicePage() {
                     <option>Gixxer SF</option>
                     <option>Gixxer</option>
                     <option>V-STROM SX</option>
+                    <option>e-ACCESS</option>
                   </select>
-                  {errors.vehicleModel && <p className="mt-1 text-xs text-red-500">{errors.vehicleModel}</p>}
+                  {errors.model && <p className="mt-1 text-xs text-red-500">{errors.model}</p>}
+                </div>
+
+                {/* Service Requested Date */}
+                <div>
+                  <label className="block text-sm font-semibold text-slate-700 mb-2">Service Requested Date *</label>
+                  <input
+                    type="date"
+                    name="serviceRequestedDate"
+                    value={formData.serviceRequestedDate}
+                    onChange={handleChange}
+                    className={`w-full px-4 py-3 rounded-lg border ${errors.serviceRequestedDate ? 'border-red-500 bg-red-50' : 'border-slate-200 bg-slate-50'} focus:outline-none focus:ring-2 focus:ring-suzuki-blue/20 transition-all`}
+                  />
+                  {errors.serviceRequestedDate && <p className="mt-1 text-xs text-red-500">{errors.serviceRequestedDate}</p>}
                 </div>
 
                 {/* Service Type */}
@@ -262,46 +301,137 @@ export default function BookServicePage() {
                   {errors.serviceType && <p className="mt-1 text-xs text-red-500">{errors.serviceType}</p>}
                 </div>
 
-                {/* Preferred Date */}
+                {/* Vehicle Registration Number */}
                 <div>
-                  <label className="block text-sm font-semibold text-slate-700 mb-2">Preferred Date *</label>
-                  <input
-                    type="date"
-                    name="preferredDate"
-                    value={formData.preferredDate}
-                    onChange={handleChange}
-                    className={`w-full px-4 py-3 rounded-lg border ${errors.preferredDate ? 'border-red-500 bg-red-50' : 'border-slate-200 bg-slate-50'} focus:outline-none focus:ring-2 focus:ring-suzuki-blue/20 transition-all`}
-                  />
-                  {errors.preferredDate && <p className="mt-1 text-xs text-red-500">{errors.preferredDate}</p>}
-                </div>
-
-                {/* Location */}
-                <div>
-                  <label className="block text-sm font-semibold text-slate-700 mb-2">Preferred Location *</label>
+                  <label className="block text-sm font-semibold text-slate-700 mb-2">Vehicle Registration Number *</label>
                   <input
                     type="text"
+                    name="vehicleRegistrationNumber"
+                    value={formData.vehicleRegistrationNumber}
+                    onChange={handleChange}
+                    className={`w-full px-4 py-3 rounded-lg border ${errors.vehicleRegistrationNumber ? 'border-red-500 bg-red-50' : 'border-slate-200 bg-slate-50'} focus:outline-none focus:ring-2 focus:ring-suzuki-blue/20 transition-all`}
+                    placeholder="e.g. TN 37 AB 1234"
+                  />
+                  {errors.vehicleRegistrationNumber && <p className="mt-1 text-xs text-red-500">{errors.vehicleRegistrationNumber}</p>}
+                </div>
+
+                {/* Kilometer Covered */}
+                <div>
+                  <label className="block text-sm font-semibold text-slate-700 mb-2">Kilometer Covered *</label>
+                  <input
+                    type="text"
+                    name="kmsCovered"
+                    value={formData.kmsCovered}
+                    onChange={handleChange}
+                    className={`w-full px-4 py-3 rounded-lg border ${errors.kmsCovered ? 'border-red-500 bg-red-50' : 'border-slate-200 bg-slate-50'} focus:outline-none focus:ring-2 focus:ring-suzuki-blue/20 transition-all`}
+                    placeholder="Enter current mileage"
+                  />
+                  {errors.kmsCovered && <p className="mt-1 text-xs text-red-500">{errors.kmsCovered}</p>}
+                </div>
+
+                {/* Preferred Location */}
+                <div>
+                  <label className="block text-sm font-semibold text-slate-700 mb-2">Preferred Location *</label>
+                  <select
                     name="location"
                     value={formData.location}
                     onChange={handleChange}
                     className={`w-full px-4 py-3 rounded-lg border ${errors.location ? 'border-red-500 bg-red-50' : 'border-slate-200 bg-slate-50'} focus:outline-none focus:ring-2 focus:ring-suzuki-blue/20 transition-all`}
-                    placeholder="Enter locality/city"
-                  />
+                  >
+                    <option value="">Select Branch</option>
+                    <option value="Coimbatore - Avinashi Road">Coimbatore - Avinashi Road</option>
+                    <option value="Kinathukadavu">Kinathukadavu</option>
+                    <option value="Udumalaipettai">Udumalaipettai</option>
+                    <option value="Coimbatore - Sundarapuram">Coimbatore - Sundarapuram</option>
+                    <option value="Dharapuram">Dharapuram</option>
+                  </select>
                   {errors.location && <p className="mt-1 text-xs text-red-500">{errors.location}</p>}
                 </div>
 
-                {/* Email Address */}
+                {/* City */}
                 <div>
-                  <label className="block text-sm font-semibold text-slate-700 mb-2">Email Address</label>
+                  <label className="block text-sm font-semibold text-slate-700 mb-2">City *</label>
                   <input
-                    type="email"
-                    name="email"
-                    value={formData.email}
+                    type="text"
+                    name="city"
+                    value={formData.city}
                     onChange={handleChange}
-                    className={`w-full px-4 py-3 rounded-lg border ${errors.email ? 'border-red-500 bg-red-50' : 'border-slate-200 bg-slate-50'} focus:outline-none focus:ring-2 focus:ring-suzuki-blue/20 transition-all`}
-                    placeholder="Optional email"
+                    className={`w-full px-4 py-3 rounded-lg border ${errors.city ? 'border-red-500 bg-red-50' : 'border-slate-200 bg-slate-50'} focus:outline-none focus:ring-2 focus:ring-suzuki-blue/20 transition-all`}
+                    placeholder="Enter your city"
                   />
-                  {errors.email && <p className="mt-1 text-xs text-red-500">{errors.email}</p>}
+                  {errors.city && <p className="mt-1 text-xs text-red-500">{errors.city}</p>}
                 </div>
+
+                {/* Pincode */}
+                <div>
+                  <label className="block text-sm font-semibold text-slate-700 mb-2">Pincode *</label>
+                  <input
+                    type="text"
+                    name="pincode"
+                    value={formData.pincode}
+                    onChange={handleChange}
+                    maxLength={6}
+                    className={`w-full px-4 py-3 rounded-lg border ${errors.pincode ? 'border-red-500 bg-red-50' : 'border-slate-200 bg-slate-50'} focus:outline-none focus:ring-2 focus:ring-suzuki-blue/20 transition-all`}
+                    placeholder="6-digit pincode"
+                  />
+                  {errors.pincode && <p className="mt-1 text-xs text-red-500">{errors.pincode}</p>}
+                </div>
+
+                {/* Vehicle Pick up Required */}
+                <div>
+                  <label className="block text-sm font-semibold text-slate-700 mb-2">Vehicle Pick up Required *</label>
+                  <div className="flex gap-6 mt-4">
+                    <label className="flex items-center gap-2 cursor-pointer group">
+                      <input
+                        type="radio"
+                        name="pickupRequired"
+                        value="Yes"
+                        checked={formData.pickupRequired === 'Yes'}
+                        onChange={handleChange}
+                        className="w-5 h-5 text-suzuki-blue border-slate-300 focus:ring-suzuki-blue/20"
+                      />
+                      <span className="text-sm font-medium text-slate-700 group-hover:text-suzuki-blue transition-colors">Yes</span>
+                    </label>
+                    <label className="flex items-center gap-2 cursor-pointer group">
+                      <input
+                        type="radio"
+                        name="pickupRequired"
+                        value="No"
+                        checked={formData.pickupRequired === 'No'}
+                        onChange={handleChange}
+                        className="w-5 h-5 text-suzuki-blue border-slate-300 focus:ring-suzuki-blue/20"
+                      />
+                      <span className="text-sm font-medium text-slate-700 group-hover:text-suzuki-blue transition-colors">No</span>
+                    </label>
+                  </div>
+                </div>
+              </div>
+
+              {/* Address */}
+              <div>
+                <label className="block text-sm font-semibold text-slate-700 mb-2">Address *</label>
+                <textarea
+                  name="address"
+                  value={formData.address}
+                  onChange={handleChange}
+                  rows={3}
+                  className={`w-full px-4 py-3 rounded-lg border ${errors.address ? 'border-red-500 bg-red-50' : 'border-slate-200 bg-slate-50'} focus:outline-none focus:ring-2 focus:ring-suzuki-blue/20 transition-all resize-none`}
+                  placeholder="Enter your full address"
+                />
+                {errors.address && <p className="mt-1 text-xs text-red-500">{errors.address}</p>}
+              </div>
+
+              {/* Message */}
+              <div>
+                <label className="block text-sm font-semibold text-slate-700 mb-2">Message</label>
+                <textarea
+                  name="message"
+                  value={formData.message}
+                  onChange={handleChange}
+                  rows={4}
+                  className="w-full px-4 py-3 rounded-lg border border-slate-200 bg-slate-50 focus:outline-none focus:ring-2 focus:ring-suzuki-blue/20 transition-all resize-none"
+                  placeholder="Describe your service requirements or issues (optional)"
+                />
               </div>
 
               {formMessage && (

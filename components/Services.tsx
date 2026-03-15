@@ -22,7 +22,7 @@ const services = [
       </svg>
     ),
     title: 'Authorised Service Centre',
-    description: 'Bike Showroom in Coimbatore - With Suzuki\'s authorized service centre, your vehicle will always receive the best possible care.',
+    description: 'Bike Showroom in Coimbatore - With Suzuki\'s authorised service centre, your vehicle will always receive the best possible care.',
   },
   {
     icon: (
@@ -31,7 +31,7 @@ const services = [
       </svg>
     ),
     title: 'Expert & Qualified Technicians',
-    description: 'Bike service center near me - Our Suzuki expert technicians specialize in handling scooters and motorcycles.',
+    description: 'Bike service centre near me - Our Suzuki expert technicians specialise in handling scooters and motorcycles.',
   },
   {
     icon: (
@@ -89,7 +89,7 @@ export default function Services() {
             viewport={{ once: true }}
             transition={{ delay: 0.2, duration: 0.5 }}
           >
-            Suzuki Bike Service Center in Coimbatore
+            Suzuki Bike Service Centre in Coimbatore
           </motion.p>
         </motion.div>
 

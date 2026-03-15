@@ -120,7 +120,7 @@ export default function InsurancePage() {
   }
 
   return (
-    <div className="min-h-screen pt-20 bg-white">
+    <div className="min-h-screen pt-24 bg-white">
       {/* Hero Banner - Careers Style */}
       <motion.section
         className="relative overflow-hidden"

@@ -6,7 +6,7 @@ import BlogCard from '@/components/BlogCard'
 
 export default function BlogsPage() {
   return (
-    <div className="min-h-screen pt-20 bg-white text-slate-900">
+    <div className="min-h-screen pt-24 bg-white text-slate-900">
       {/* Hero Section */}
       <motion.section
         className="relative overflow-hidden"
@@ -48,8 +48,6 @@ export default function BlogsPage() {
       </motion.section>
 
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pt-12 pb-16">
-
-
         {/* Blog Grid */}
         <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
           {blogs.map((blog, index) => (

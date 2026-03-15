@@ -145,12 +145,7 @@ function ProductCard({ item }: { item: typeof bikes[0] }) {
             <p className="text-[10px] sm:text-sm md:text-base text-gray-600 line-clamp-2 font-medium leading-relaxed">
               {item.description}
             </p>
-            <div className="pt-2 flex items-center text-suzuki-blue font-black text-[9px] sm:text-xs tracking-[0.2em] sm:tracking-[0.25em] uppercase">
-              <span>View Details</span>
-              <svg className="w-4 h-4 sm:w-6 sm:h-6 ml-2 sm:ml-3 group-hover:translate-x-3 transition-transform duration-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-              </svg>
-            </div>
+            {/* Removed View Details button as requested to clean up UI */}
           </div>
         </div>
       </Link>
@@ -255,12 +250,11 @@ export default function HomeProductSliders() {
           title="Scooter"
           subtitle="Experience the perfect blend of comfort, style, and urban practicality."
           items={scooters}
-          reverse
         />
 
-        {/* Explore All CTA - Premium Version */}
+        {/* Explore All CTA - Two Buttons */}
         <motion.div
-          className="text-center pt-12 sm:pt-20 px-4"
+          className="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-6 pt-12 sm:pt-20 px-4"
           initial={{ opacity: 0, y: 40 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
@@ -276,7 +270,24 @@ export default function HomeProductSliders() {
               whileTap={{ scale: 0.95 }}
               className="bg-gray-900 text-white px-8 py-4 sm:px-16 sm:py-6 rounded-2xl sm:rounded-3xl font-black text-sm sm:text-xl shadow-2xl transition-all duration-700 group flex items-center justify-center gap-4 sm:gap-6 mx-auto w-full sm:w-auto"
             >
-              <span>EXPLORE ALL MODELS</span>
+              <span>EXPLORE ALL BIKES</span>
+              <svg className="w-5 h-5 sm:w-7 sm:h-7 group-hover:translate-x-3 transition-transform duration-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={4} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+              </svg>
+            </motion.button>
+          </Link>
+          <Link href="/products/scooters">
+            <motion.button
+              whileHover={{
+                scale: 1.05,
+                y: -10,
+                boxShadow: '0 40px 80px -20px rgba(15, 23, 42, 0.4)',
+                backgroundColor: '#000'
+              }}
+              whileTap={{ scale: 0.95 }}
+              className="bg-gray-900 text-white px-8 py-4 sm:px-16 sm:py-6 rounded-2xl sm:rounded-3xl font-black text-sm sm:text-xl shadow-2xl transition-all duration-700 group flex items-center justify-center gap-4 sm:gap-6 mx-auto w-full sm:w-auto"
+            >
+              <span>EXPLORE ALL SCOOTERS</span>
               <svg className="w-5 h-5 sm:w-7 sm:h-7 group-hover:translate-x-3 transition-transform duration-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={4} d="M17 8l4 4m0 0l-4 4m4-4H3" />
               </svg>

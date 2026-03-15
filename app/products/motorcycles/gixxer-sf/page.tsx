@@ -4,6 +4,7 @@ import { motion, AnimatePresence, useMotionValue, useSpring, useTransform } from
 import Image from 'next/image'
 import Link from 'next/link'
 import { useState } from 'react'
+import ZoomableImageModal from '../../../../components/ZoomableImageModal'
 
 const colorVariants = [
   {
@@ -47,7 +48,7 @@ export default function GixxerSFPage() {
   }
 
   return (
-    <div className="min-h-screen pt-20 bg-white text-slate-900">
+    <div className="min-h-screen pt-24 bg-white text-slate-900">
       {/* Header Section - Careers Style */}
       <motion.section
         className="relative overflow-hidden"
@@ -363,72 +364,13 @@ export default function GixxerSFPage() {
         </div>
       </div>
 
-      {/* Zoom Modal - Enhanced for mobile */}
-      <AnimatePresence>
-        {isZoomed && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 bg-black/95 flex items-center justify-center p-2 sm:p-4"
-            onClick={closeZoom}
-          >
-            <motion.button
-              onClick={closeZoom}
-              className="absolute top-3 right-3 sm:top-4 sm:right-4 bg-white/20 hover:bg-white/30 active:bg-white/40 text-white p-2.5 sm:p-3 rounded-full transition-all z-10 touch-manipulation"
-              whileHover={{ scale: 1.1, rotate: 90 }}
-              whileTap={{ scale: 0.9, rotate: 180 }}
-              aria-label="Close zoom"
-            >
-              <svg className="w-6 h-6 sm:w-8 sm:h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </motion.button>
-
-            <motion.div
-              initial={{ scale: 0.7, opacity: 0, rotateY: -20 }}
-              animate={{ scale: 1, opacity: 1, rotateY: 0 }}
-              exit={{ scale: 0.7, opacity: 0, rotateY: 20 }}
-              transition={{
-                duration: 0.4,
-                type: "spring",
-                stiffness: 200
-              }}
-              className="relative w-full h-full max-w-7xl max-h-[95vh] sm:max-h-[90vh]"
-              onClick={(e) => e.stopPropagation()}
-              drag="y"
-              dragConstraints={{ top: 0, bottom: 0 }}
-              dragElastic={0.2}
-              onDragEnd={(e, info) => {
-                if (Math.abs(info.offset.y) > 100) {
-                  closeZoom()
-                }
-              }}
-            >
-              <Image
-                src={selectedColor.image}
-                alt={`Zoomed Gixxer SF ${selectedColor.name}`}
-                fill
-                className="object-contain p-4 sm:p-6 md:p-8"
-                quality={100}
-                priority
-                sizes="100vw"
-              />
-            </motion.div>
-
-            {/* Swipe down indicator for mobile */}
-            <motion.div
-              className="absolute bottom-4 left-1/2 -translate-x-1/2 text-white/70 text-xs sm:text-sm flex items-center gap-2 z-10"
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: [0.5, 1, 0.5], y: [0, 5, 0] }}
-              transition={{ duration: 2, repeat: Infinity }}
-            >
-              <span className="hidden sm:inline">Swipe down to close</span>
-              <span className="sm:hidden">Tap outside to close</span>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      {/* Zoom Modal */}
+      <ZoomableImageModal
+        src={selectedColor.image}
+        alt={`Zoomed Gixxer SF ${selectedColor.name}`}
+        isOpen={isZoomed}
+        onClose={closeZoom}
+      />
     </div>
   )
 }

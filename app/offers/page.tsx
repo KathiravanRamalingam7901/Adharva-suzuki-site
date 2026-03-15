@@ -34,7 +34,7 @@ const offerBanners = [
 
 export default function OffersPage() {
   return (
-    <div className="min-h-screen pt-20 bg-white">
+    <main className="min-h-screen bg-white pt-24">
       {/* Hero Banner - Careers Style */}
       <motion.section
         className="relative overflow-hidden"
@@ -152,6 +152,6 @@ export default function OffersPage() {
           </motion.div>
         </div>
       </section>
-    </div>
+    </main>
   )
 }

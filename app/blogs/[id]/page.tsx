@@ -21,7 +21,7 @@ export default function BlogDetailPage() {
         .slice(0, 3)
 
     return (
-        <article className="min-h-screen bg-white pt-20">
+        <article className="min-h-screen bg-white pt-24">
             {/* Generic Header Banner (Careers Style) */}
             <motion.section
                 className="relative overflow-hidden border-b border-slate-100"
@@ -61,7 +61,7 @@ export default function BlogDetailPage() {
                     {/* Main Content */}
                     <div className="lg:col-span-2">
                         {/* Feature Image */}
-                        <div className="relative mb-8 h-[300px] w-full overflow-hidden rounded-2xl md:h-[400px]">
+                        <div className="relative mb-8 aspect-video w-full overflow-hidden rounded-2xl md:h-[400px] md:aspect-auto">
                             <Image
                                 src={blog.image}
                                 alt={blog.title}
@@ -78,9 +78,6 @@ export default function BlogDetailPage() {
                             transition={{ duration: 0.6 }}
                             className="mb-8"
                         >
-                            <span className="mb-3 inline-block rounded-full bg-suzuki-red px-3 py-1 text-xs font-bold uppercase tracking-wider text-white">
-                                {blog.category}
-                            </span>
                             <h1 className="mb-4 text-3xl font-extrabold leading-tight text-slate-900 md:text-5xl">
                                 {blog.title}
                             </h1>
@@ -143,17 +140,6 @@ export default function BlogDetailPage() {
                             </div>
                         </div>
 
-                        {/* Categories Widget */}
-                        <div className="rounded-2xl border border-slate-100 bg-slate-50 p-6 shadow-sm">
-                            <h3 className="mb-4 text-xl font-bold text-slate-900">Categories</h3>
-                            <div className="flex flex-wrap gap-2">
-                                {['General', 'Maintenance', 'Riding Tips', 'New Launches', 'Events'].map((cat) => (
-                                    <span key={cat} className="cursor-pointer rounded-lg bg-white border border-slate-200 px-3 py-1.5 text-xs font-medium text-slate-600 hover:bg-suzuki-blue hover:text-white hover:border-suzuki-blue transition-colors">
-                                        {cat}
-                                    </span>
-                                ))}
-                            </div>
-                        </div>
                     </div>
                 </div>
             </div>

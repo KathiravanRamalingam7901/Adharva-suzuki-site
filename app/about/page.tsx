@@ -64,7 +64,7 @@ const stats = [
 
 export default function AboutPage() {
   return (
-    <div className="min-h-screen pt-20 bg-white">
+    <div className="min-h-screen pt-24 bg-white">
       {/* Hero Banner - Careers Style */}
       <motion.section
         className="relative overflow-hidden"
@@ -228,29 +228,42 @@ export default function AboutPage() {
         </motion.div>
 
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {serviceFeatures.map((service, index) => (
-            <motion.div
-              key={service.title}
-              className="group bg-white rounded-xl p-6 shadow-sm hover:shadow-xl transition-all duration-300 border border-slate-100"
-              initial={{ opacity: 0, y: 40 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: index * 0.08, duration: 0.5 }}
-              whileHover={{ y: -8 }}
-            >
-              <div className="flex items-start gap-4">
-                <div className="flex-shrink-0 w-12 h-12 flex items-center justify-center text-2xl bg-gradient-to-br from-suzuki-blue/10 to-suzuki-red/10 rounded-lg group-hover:scale-110 transition-transform">
-                  {service.icon}
+          {serviceFeatures.map((service, index) => {
+            const isContact = service.title === 'Contact Us Now'
+            const cardContent = (
+              <motion.div
+                key={service.title}
+                className={`group bg-white rounded-xl p-6 shadow-sm hover:shadow-xl transition-all duration-300 border border-slate-100 ${isContact ? 'cursor-pointer border-suzuki-blue/30 hover:border-suzuki-blue' : ''}`}
+                initial={{ opacity: 0, y: 40 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: index * 0.08, duration: 0.5 }}
+                whileHover={{ y: -8 }}
+              >
+                <div className="flex items-start gap-4">
+                  <div className="flex-shrink-0 w-12 h-12 flex items-center justify-center text-2xl bg-gradient-to-br from-suzuki-blue/10 to-suzuki-red/10 rounded-lg group-hover:scale-110 transition-transform">
+                    {service.icon}
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-bold text-slate-900 mb-2 group-hover:text-suzuki-blue transition-colors">
+                      {service.title}
+                    </h3>
+                    <p className="text-sm text-slate-600 leading-relaxed">{service.description}</p>
+
+                  </div>
                 </div>
-                <div>
-                  <h3 className="text-lg font-bold text-slate-900 mb-2 group-hover:text-suzuki-blue transition-colors">
-                    {service.title}
-                  </h3>
-                  <p className="text-sm text-slate-600 leading-relaxed">{service.description}</p>
-                </div>
+              </motion.div>
+            )
+            return isContact ? (
+              <a key={service.title} href="tel:+918940057000" aria-label="Call Adharvaa Suzuki">
+                {cardContent}
+              </a>
+            ) : (
+              <div key={service.title}>
+                {cardContent}
               </div>
-            </motion.div>
-          ))}
+            )
+          })}
         </div>
       </section>
 

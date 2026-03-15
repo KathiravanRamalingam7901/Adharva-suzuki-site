@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { motion } from 'framer-motion'
 import Image from 'next/image'
 
@@ -151,6 +151,11 @@ export default function CareersPage() {
     position: positions[0]?.id ?? '',
   })
   const [resumeFile, setResumeFile] = useState<File | null>(null)
+  const formRef = useRef<HTMLDivElement>(null)
+
+  const scrollToForm = () => {
+    formRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  }
 
   const validateForm = () => {
     const newErrors: Record<string, string> = {}
@@ -276,7 +281,7 @@ export default function CareersPage() {
   }
 
   return (
-    <div className="min-h-screen pt-20 bg-white text-slate-900">
+    <div className="min-h-screen pt-24 bg-white text-slate-900">
       {/* Hero */}
       <motion.section
         className="relative overflow-hidden"
@@ -349,6 +354,7 @@ export default function CareersPage() {
                   onClick={() => {
                     setSelectedPosition(pos.id)
                     setFormData((prev) => ({ ...prev, position: pos.id }))
+                    scrollToForm()
                   }}
                   initial={{ opacity: 0, y: 40, scale: 0.95, rotateY: -8 }}
                   whileInView={{ opacity: 1, y: 0, scale: 1, rotateY: 0 }}
@@ -411,7 +417,8 @@ export default function CareersPage() {
 
         {/* Apply form */}
         <motion.div
-          className="relative rounded-2xl border border-slate-200 bg-white px-4 py-5 sm:px-6 sm:py-6 md:px-7 md:py-7 shadow-md"
+          ref={formRef}
+          className="relative rounded-2xl border border-slate-200 bg-white px-4 py-5 sm:px-6 sm:py-6 md:px-7 md:py-7 shadow-md scroll-mt-24"
           initial={{ opacity: 0, y: 40 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, amount: 0.3 }}

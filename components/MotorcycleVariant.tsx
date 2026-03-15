@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import Image from 'next/image'
 import Link from 'next/link'
+import ZoomableImageModal from './ZoomableImageModal'
 
 interface ColorVariant {
   name: string
@@ -264,47 +265,12 @@ export default function MotorcycleVariant({
       </motion.div>
 
       {/* Zoom Modal */}
-      <AnimatePresence>
-        {isZoomed && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 bg-black/95 flex items-center justify-center p-4"
-            onClick={closeZoom}
-          >
-            <motion.button
-              onClick={closeZoom}
-              className="absolute top-4 right-4 bg-white/20 hover:bg-white/30 text-white p-3 rounded-full transition-all z-10"
-              whileHover={{ scale: 1.1, rotate: 90 }}
-              aria-label="Close zoom"
-            >
-              <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </motion.button>
-
-            <motion.div
-              initial={{ scale: 0.8, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.8, opacity: 0 }}
-              transition={{ duration: 0.3 }}
-              className="relative w-full h-full max-w-7xl max-h-[90vh]"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <Image
-                src={currentImage}
-                alt={`${displayName} - ${selectedColor.name}`}
-                fill
-                className="object-contain p-8"
-                quality={100}
-                priority
-                sizes="100vw"
-              />
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      <ZoomableImageModal
+        src={currentImage}
+        alt={`${displayName} - ${selectedColor.name}`}
+        isOpen={isZoomed}
+        onClose={closeZoom}
+      />
     </>
   )
 }

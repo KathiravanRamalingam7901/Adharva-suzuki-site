@@ -221,6 +221,7 @@ export default function BookTestDrivePage() {
                     <option>Gixxer SF</option>
                     <option>Gixxer</option>
                     <option>V-STROM SX</option>
+                    <option>e-ACCESS</option>
                   </select>
                   {errors.vehicle && <p className="mt-1 text-xs text-red-500">{errors.vehicle}</p>}
                 </div>
@@ -254,14 +255,19 @@ export default function BookTestDrivePage() {
                 {/* Location */}
                 <div>
                   <label className="block text-sm font-semibold text-slate-700 mb-2">Preferred Location *</label>
-                  <input
-                    type="text"
+                  <select
                     name="location"
                     value={formData.location}
                     onChange={handleChange}
                     className={`w-full px-4 py-3 rounded-lg border ${errors.location ? 'border-red-500 bg-red-50' : 'border-slate-200 bg-slate-50'} focus:outline-none focus:ring-2 focus:ring-suzuki-blue/20 transition-all`}
-                    placeholder="Enter city/locality"
-                  />
+                  >
+                    <option value="">Select Branch</option>
+                    <option value="Coimbatore - Avinashi Road">Coimbatore - Avinashi Road</option>
+                    <option value="Kinathukadavu">Kinathukadavu</option>
+                    <option value="Udumalaipettai">Udumalaipettai</option>
+                    <option value="Coimbatore - Sundarapuram">Coimbatore - Sundarapuram</option>
+                    <option value="Dharapuram">Dharapuram</option>
+                  </select>
                   {errors.location && <p className="mt-1 text-xs text-red-500">{errors.location}</p>}
                 </div>
 

@@ -20,17 +20,16 @@ export default function BlogCard({ blog, index }: BlogCardProps) {
             whileHover={{ y: -5 }}
             className="group flex flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition-all hover:border-suzuki-blue/50 hover:shadow-lg"
         >
-            <Link href={`/blogs/${blog.id}`} className="relative h-48 w-full overflow-hidden sm:h-56">
-                <Image
-                    src={blog.image}
-                    alt={blog.title}
-                    fill
-                    className="object-cover transition-transform duration-500 group-hover:scale-110"
-                />
-                <div className="absolute top-4 left-4 rounded-full bg-white/90 px-3 py-1 text-xs font-semibold text-suzuki-blue backdrop-blur-sm">
-                    {blog.category}
-                </div>
-            </Link>
+            <div className="relative aspect-video w-full overflow-hidden">
+                <Link href={`/blogs/${blog.id}`}>
+                    <Image
+                        src={blog.image}
+                        alt={blog.title}
+                        fill
+                        className="object-cover transition-transform duration-500 group-hover:scale-110"
+                    />
+                </Link>
+            </div>
 
             <div className="flex flex-1 flex-col p-5">
                 <div className="mb-3 flex items-center text-xs text-slate-500">

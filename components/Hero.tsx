@@ -7,22 +7,31 @@ import Link from 'next/link'
 
 const slides = [
   {
+    id: 'e-access-banner',
+    image: '/images/scooters/e-access/hero-desktop.jpg',
+    title: '',
+    subtitle: '',
+    primaryCta: { label: '', href: '/products/scooters/e-access' },
+    secondaryCta: { label: '', href: '/enquiry/book-test-drive' },
+    hideContent: true,
+  },
+  {
     id: 'access-banner',
     image: '/images/Banner/Access-New-Blue_Website-Banner_1920-x-965.jpg',
-    title: 'Access 125 – Smooth City Rides',
-    subtitle: 'Comfortable, efficient and ready for your daily commute.',
-    primaryCta: { label: 'View Access 125', href: '/products/scooters/access-125' },
-    secondaryCta: { label: 'Book Test Drive', href: '/enquiry/book-test-drive' },
-    hideContent: false,
+    title: '',
+    subtitle: '',
+    primaryCta: { label: '', href: '/products/scooters/access-125' },
+    secondaryCta: { label: '', href: '/enquiry/book-test-drive' },
+    hideContent: true,
   },
   {
     id: 'avenis-banner',
     image: '/images/Banner/Avenis_KV_2x1 Size_CTC.jpg',
-    title: 'Avenis – Sporty Urban Style',
-    subtitle: 'Bold design and advanced features for the modern rider.',
-    primaryCta: { label: 'View Avenis', href: '/products/scooters/avenis' },
-    secondaryCta: { label: 'Get Quote', href: '/enquiry/get-quote' },
-    hideContent: false,
+    title: '',
+    subtitle: '',
+    primaryCta: { label: '', href: '/products/scooters/avenis' },
+    secondaryCta: { label: '', href: '/enquiry/get-quote' },
+    hideContent: true,
   },
   {
     id: 'access-campaign',
@@ -31,7 +40,7 @@ const slides = [
     subtitle: '',
     primaryCta: { label: '', href: '' },
     secondaryCta: { label: '', href: '' },
-    hideContent: true, // Special flag to hide all text/overlay content
+    hideContent: true,
   },
 ]
 
@@ -48,19 +57,17 @@ export default function Hero() {
   }, [isAutoPlaying])
 
   const nextSlide = () => {
-    setIsAutoPlaying(false)
     setCurrent((prev) => (prev + 1) % slides.length)
   }
 
   const prevSlide = () => {
-    setIsAutoPlaying(false)
     setCurrent((prev) => (prev - 1 + slides.length) % slides.length)
   }
 
   const activeSlide = slides[current]
 
   return (
-    <section id="home" className="relative pt-16 bg-black text-white overflow-hidden">
+    <section id="home" className="relative pt-20 bg-black text-white overflow-hidden">
       {/* Preload images for faster switching */}
       <div className="hidden">
         {slides.map(slide => (
@@ -68,8 +75,8 @@ export default function Hero() {
         ))}
       </div>
 
-      {/* Sliding Banner */}
-      <div className="relative h-[65vh] sm:h-[75vh] md:h-[85vh] lg:h-[90vh]">
+      {/* Sliding Banner - Enforced 2/1 aspect ratio to prevent cutoff on all screens */}
+      <div className="relative aspect-[2/1]">
         <AnimatePresence mode="wait">
           <motion.div
             key={activeSlide.id}
@@ -99,12 +106,14 @@ export default function Hero() {
               className="object-cover object-center"
               sizes="100vw"
             />
-            {/* Optimized dark gradient overlay - HIDDEN if hideContent is true */}
+            {/* Adjusted dark gradient overlay for campaign banners */}
             {!activeSlide.hideContent && (
               <>
-                <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/40 to-transparent" />
-                <div className="absolute inset-0 bg-black/10" />
+                <div className="absolute inset-x-0 bottom-0 h-48 bg-gradient-to-t from-black/60 to-transparent z-10" />
               </>
+            )}
+            {activeSlide.hideContent && (
+                <div className="absolute inset-0 bg-black/5 z-10" />
             )}
           </motion.div>
         </AnimatePresence>
@@ -151,77 +160,14 @@ export default function Hero() {
           </div>
         )}
 
-        {/* Content */}
-        <AnimatePresence>
-          {!activeSlide.hideContent && (
-            <div className="relative z-10 h-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center pt-8 md:pt-0">
-              <div className="grid md:grid-cols-2 gap-8 md:gap-12 items-center w-full">
-                {/* Text & CTAs */}
-                <motion.div
-                  key={`${activeSlide.id}-content`}
-                  initial={{ opacity: 0, y: 30 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -30 }}
-                  transition={{ duration: 0.6 }}
-                  className="text-left"
-                >
-                  <motion.h1
-                    className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold mb-4 md:mb-6 leading-tight drop-shadow-lg"
-                  >
-                    {activeSlide.title.split(' – ').map((part, i) => (
-                      <span key={i} className={i === 1 ? "text-suzuki-red block mt-1" : "block"}>
-                        {part}
-                      </span>
-                    ))}
-                  </motion.h1>
-                  <motion.p
-                    className="text-lg sm:text-xl md:text-2xl text-gray-100 mb-8 md:mb-10 max-w-xl leading-relaxed drop-shadow-md"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ delay: 0.2 }}
-                  >
-                    {activeSlide.subtitle}
-                  </motion.p>
-                  <motion.div
-                    className="flex flex-col sm:flex-row gap-4"
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.3 }}
-                  >
-                    <Link href={activeSlide.primaryCta.href}>
-                      <motion.button
-                        className="bg-suzuki-red hover:bg-red-700 text-white px-8 py-4 rounded-xl text-lg font-bold transition duration-300 text-center w-full sm:w-auto shadow-2xl"
-                        whileHover={{ scale: 1.05, y: -2 }}
-                        whileTap={{ scale: 0.95 }}
-                      >
-                        {activeSlide.primaryCta.label}
-                      </motion.button>
-                    </Link>
-                    <Link href={activeSlide.secondaryCta.href}>
-                      <motion.button
-                        className="bg-white/10 backdrop-blur-md border-2 border-white/30 hover:bg-white hover:text-suzuki-blue text-white px-8 py-4 rounded-xl text-lg font-bold transition duration-300 text-center w-full sm:w-auto"
-                        whileHover={{ scale: 1.05, y: -2 }}
-                        whileTap={{ scale: 0.95 }}
-                      >
-                        {activeSlide.secondaryCta.label}
-                      </motion.button>
-                    </Link>
-                  </motion.div>
-                </motion.div>
-
-                <div className="hidden md:block" />
-              </div>
-            </div>
-          )}
-        </AnimatePresence>
+        {/* Content - Removed as requested */}
 
         {/* Slider dots */}
-        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex gap-3 z-20">
+        <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-3 z-20">
           {slides.map((slide, index) => (
             <button
               key={slide.id}
               onClick={() => {
-                setIsAutoPlaying(false)
                 setCurrent(index)
               }}
               className={`h-2.5 rounded-full transition-all duration-300 ${index === current ? 'bg-suzuki-red w-10' : 'bg-white/40 w-2.5 hover:bg-white/60'

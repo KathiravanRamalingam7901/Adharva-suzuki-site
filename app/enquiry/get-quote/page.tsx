@@ -120,7 +120,7 @@ export default function GetQuotePage() {
   }
 
   return (
-    <div className="min-h-screen pt-20 bg-white">
+    <div className="min-h-screen pt-24 bg-white text-slate-900">
       {/* Hero Banner - Careers Style */}
       <motion.section
         className="relative overflow-hidden"
@@ -231,6 +231,7 @@ export default function GetQuotePage() {
                     <option>AVENIS</option>
                     <option>BURGMAN STREET</option>
                     <option>BURGMAN STREET EX</option>
+                    <option>e-ACCESS</option>
                   </select>
                   {errors.model && <p className="mt-1 text-xs text-red-500">{errors.model}</p>}
                 </div>

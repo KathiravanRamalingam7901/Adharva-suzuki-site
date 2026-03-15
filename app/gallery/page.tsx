@@ -24,7 +24,7 @@ export default function GalleryPage() {
   const [selectedImage, setSelectedImage] = useState<string | null>(null)
 
   return (
-    <div className="min-h-screen pt-20 bg-white text-slate-900">
+    <div className="min-h-screen pt-24 bg-white text-slate-900">
       {/* Hero */}
       <motion.section
         className="relative overflow-hidden"
