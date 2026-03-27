@@ -88,14 +88,14 @@ export default function BookServicePage() {
     setFormMessage(null)
 
     if (!validateForm()) {
-      setFormMessage('Please fix the errors highlighted below.')
+      setFormMessage('Please fix the errors highlighted above.')
       return
     }
 
     setIsSubmitting(true)
 
     try {
-      const TARGET_EMAIL = "care.suzuki@adharvaa.in"
+      const TARGET_EMAIL = "service.suzuki@adharvaa.in"
       const endpoint = `https://formsubmit.co/${TARGET_EMAIL}`
 
       const formDataToSend = new FormData()
@@ -277,6 +277,7 @@ export default function BookServicePage() {
                     name="serviceRequestedDate"
                     value={formData.serviceRequestedDate}
                     onChange={handleChange}
+                    min={new Date().toLocaleDateString('en-CA')}
                     className={`w-full px-4 py-3 rounded-lg border ${errors.serviceRequestedDate ? 'border-red-500 bg-red-50' : 'border-slate-200 bg-slate-50'} focus:outline-none focus:ring-2 focus:ring-suzuki-blue/20 transition-all`}
                   />
                   {errors.serviceRequestedDate && <p className="mt-1 text-xs text-red-500">{errors.serviceRequestedDate}</p>}

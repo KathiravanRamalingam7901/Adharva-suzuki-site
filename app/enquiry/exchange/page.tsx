@@ -73,14 +73,14 @@ export default function ExchangePage() {
     setFormMessage(null)
 
     if (!validateForm()) {
-      setFormMessage('Please fix the errors highlighted below.')
+      setFormMessage('Please fix the errors highlighted above.')
       return
     }
 
     setIsSubmitting(true)
 
     try {
-      const TARGET_EMAIL = "care.suzuki@adharvaa.in"
+      const TARGET_EMAIL = "sales.suzuki@adharvaa.in"
       const endpoint = `https://formsubmit.co/${TARGET_EMAIL}`
 
       const formDataToSend = new FormData()
@@ -266,6 +266,7 @@ export default function ExchangePage() {
                     <option>Gixxer SF</option>
                     <option>Gixxer</option>
                     <option>V-STROM SX</option>
+                    <option>e-ACCESS</option>
                   </select>
                   {errors.vehicleModel && <p className="mt-1 text-xs text-red-500">{errors.vehicleModel}</p>}
                 </div>

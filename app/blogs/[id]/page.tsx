@@ -34,15 +34,11 @@ export default function BlogDetailPage() {
                 <div className="absolute -left-24 -bottom-12 w-72 h-72 bg-blue-500/10 blur-3xl rounded-full" />
 
                 <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 text-center">
-                    <Link href="/blogs" className="inline-block">
-                        <motion.p
-                            className="text-xs uppercase tracking-[0.25em] text-suzuki-blue mb-2 hover:underline cursor-pointer"
-                            initial={{ opacity: 0, y: 10 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: 0.1 }}
-                        >
-                            Knowledge Hub
-                        </motion.p>
+                    <Link href="/blogs" className="inline-flex items-center text-slate-600 hover:text-suzuki-blue mb-4 transition-colors text-sm font-medium">
+                        <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                        </svg>
+                        Back to Blogs
                     </Link>
                     <motion.h1
                         className="text-2xl sm:text-3xl font-extrabold text-slate-900"

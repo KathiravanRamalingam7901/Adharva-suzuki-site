@@ -15,9 +15,9 @@ type Position = {
 const positions: Position[] = [
   {
     id: 'accounts-manager',
-    title: 'Acounts Manager',
+    title: 'Accounts Manager',
     location: 'Coimbatore',
-    thumbnail: '/images/careers/Acounts Manager.jpg',
+    thumbnail: '/images/careers/Accounts Manager.jpg',
     responsibilities: [
       'Manage daily accounts and financial records',
       'Coordinate with management on reports and audits',
@@ -114,6 +114,14 @@ const positions: Position[] = [
   },
 ]
 
+const branches = [
+  { id: 'coimbatore-avinashi', name: 'Coimbatore - Avinashi Road' },
+  { id: 'kinathukadavu', name: 'Kinathukadavu' },
+  { id: 'udumalaipettai', name: 'Udumalaipettai' },
+  { id: 'coimbatore-sundarapuram', name: 'Coimbatore - Sundarapuram' },
+  { id: 'dharapuram', name: 'Dharapuram' },
+]
+
 const cardVariants = {
   initial: { opacity: 0, y: 40, rotateX: -10, scale: 0.95 },
   animate: (index: number) => ({
@@ -149,6 +157,7 @@ export default function CareersPage() {
     phone: '',
     address: '',
     position: positions[0]?.id ?? '',
+    preferredBranch: '',
   })
   const [resumeFile, setResumeFile] = useState<File | null>(null)
   const formRef = useRef<HTMLDivElement>(null)
@@ -178,6 +187,7 @@ export default function CareersPage() {
       newErrors.phone = 'Phone number must be 10 digits'
     }
     if (!formData.address.trim()) newErrors.address = 'Address is required'
+    if (!formData.preferredBranch) newErrors.preferredBranch = 'Please select a preferred branch'
     if (!resumeFile) newErrors.resume = 'Resume is required'
 
     setErrors(newErrors)
@@ -216,7 +226,7 @@ export default function CareersPage() {
     setFormMessage(null)
 
     if (!validateForm()) {
-      setFormMessage('Please fix the errors highlighted in red.')
+      setFormMessage('Please fix the errors highlighted above.')
       return
     }
 
@@ -226,7 +236,7 @@ export default function CareersPage() {
       // -----------------------------------------------------------------------
       // SECURE SUBMISSION (FormSubmit.co)
       // -----------------------------------------------------------------------
-      const TARGET_EMAIL = "khebzonee@gmail.com"
+      const TARGET_EMAIL = "admin.suzuki@adarvaa.in"
       const endpoint = `https://formsubmit.co/${TARGET_EMAIL}`
 
       // Use FormData to support file uploads
@@ -235,13 +245,14 @@ export default function CareersPage() {
       formDataToSend.append('Email Address', formData.email)
       formDataToSend.append('Phone Number', formData.phone)
       formDataToSend.append('Residential Address', formData.address)
+      formDataToSend.append('Preferred Branch', branches.find(b => b.id === formData.preferredBranch)?.name ?? 'Not Selected')
       formDataToSend.append('Job Position', positions.find((p) => p.id === formData.position)?.title ?? formData.position)
 
       // Special FormSubmit settings
       formDataToSend.append('_subject', `New Career Application: ${formData.name} - ${positions.find((p) => p.id === formData.position)?.title ?? ''}`)
       formDataToSend.append('_captcha', 'false') // Disable captcha for cleaner UX
       formDataToSend.append('_template', 'table') // Structured table format
-      formDataToSend.append('_order', 'Job Position,Applicant Name,Email Address,Phone Number,Residential Address') // Force order
+      formDataToSend.append('_order', 'Job Position,Applicant Name,Email Address,Phone Number,Residential Address,Preferred Branch') // Force order
 
       // Append Resume File
       if (resumeFile) {
@@ -264,6 +275,7 @@ export default function CareersPage() {
           phone: '',
           address: '',
           position: positions[0]?.id ?? '',
+          preferredBranch: '',
         })
         setSelectedPosition(positions[0]?.id ?? '')
         setResumeFile(null)
@@ -533,6 +545,29 @@ export default function CareersPage() {
 
             <div className="space-y-1.5">
               <label className="block text-[11px] sm:text-xs font-medium text-slate-700">
+                Preferred Branch <span className="text-red-500">*</span>
+              </label>
+              <select
+                name="preferredBranch"
+                value={formData.preferredBranch}
+                onChange={handleChange}
+                className={`w-full rounded-lg border bg-white px-3 py-2 text-sm text-slate-900 outline-none focus:ring-2 ${errors.preferredBranch
+                  ? 'border-red-500 focus:border-red-500 focus:ring-red-200'
+                  : 'border-slate-300 focus:border-suzuki-blue focus:ring-suzuki-blue/30'
+                  }`}
+              >
+                <option value="">Select Branch</option>
+                {branches.map((branch) => (
+                  <option key={branch.id} value={branch.id}>
+                    {branch.name}
+                  </option>
+                ))}
+              </select>
+              {errors.preferredBranch && <p className="text-[10px] text-red-500">{errors.preferredBranch}</p>}
+            </div>
+
+            <div className="space-y-1.5">
+              <label className="block text-[11px] sm:text-xs font-medium text-slate-700">
                 Upload Resume <span className="text-red-500">*</span>
               </label>
               <div className={`relative flex items-center justify-between gap-3 rounded-lg border border-dashed bg-slate-50 px-3 py-2.5 ${errors.resume ? 'border-red-500 bg-red-50' : 'border-slate-300'
@@ -564,9 +599,9 @@ export default function CareersPage() {
               <motion.div
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
-                className={`rounded-lg p-4 text-sm font-medium ${formMessage.includes('successfully')
-                  ? 'bg-emerald-100 text-emerald-800 border border-emerald-200'
-                  : (formMessage.includes('wrong') || formMessage.includes('Network') ? 'bg-red-50 text-red-600 border border-red-200' : 'bg-slate-50 text-slate-700 border border-slate-200')
+                className={`rounded-lg p-4 text-sm font-medium border ${formMessage.includes('successfully')
+                  ? 'bg-emerald-50 text-emerald-800 border-emerald-200'
+                  : 'bg-red-50 text-red-800 border-red-200'
                   }`}
               >
                 <div className="flex items-center gap-2">

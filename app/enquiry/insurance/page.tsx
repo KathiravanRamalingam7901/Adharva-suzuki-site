@@ -66,7 +66,7 @@ export default function InsurancePage() {
     setFormMessage(null)
 
     if (!validateForm()) {
-      setFormMessage('Please fix the errors highlighted below.')
+      setFormMessage('Please fix the errors highlighted above.')
       return
     }
 
@@ -217,6 +217,7 @@ export default function InsurancePage() {
                     <option>Gixxer SF</option>
                     <option>Gixxer</option>
                     <option>V-STROM SX</option>
+                    <option>e-ACCESS</option>
                   </select>
                   {errors.vehicle && <p className="mt-1 text-xs text-red-500">{errors.vehicle}</p>}
                 </div>

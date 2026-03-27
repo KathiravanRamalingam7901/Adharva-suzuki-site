@@ -89,6 +89,7 @@ const models = [
   'V-STROM SX',
   'Burgman Street',
   'Burgman Street EX',
+  'e-ACCESS',
 ]
 
 export default function Contact() {
@@ -181,7 +182,7 @@ export default function Contact() {
     setFormMessage(null)
 
     if (!validateForm()) {
-      setFormMessage('Please fix the errors highlighted in red.')
+      setFormMessage('Please fix the errors highlighted above.')
 
       // Scroll to first error
       const firstErrorField = Object.keys(errors)[0] || 'name' // Fallback
@@ -203,7 +204,7 @@ export default function Contact() {
 
       // FormSubmit.co Configuration
       // Production: Use the branch email as the target
-      const TARGET_EMAIL = branchEmail
+      const TARGET_EMAIL = 'sales.suzuki@adharvaa.in'
       const endpoint = `https://formsubmit.co/${TARGET_EMAIL}`
 
       const formDataToSend = new FormData()
@@ -743,7 +744,11 @@ export default function Contact() {
 
             {formMessage && (
               <motion.p
-                className="text-[11px] sm:text-xs text-slate-700 p-3 rounded-lg bg-emerald-50 border border-emerald-200"
+                className={`text-[11px] sm:text-xs p-3 rounded-lg border ${
+                  formMessage.includes('successfully')
+                    ? 'bg-emerald-50 text-emerald-800 border-emerald-200'
+                    : 'bg-red-50 text-red-800 border-red-200'
+                }`}
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
               >

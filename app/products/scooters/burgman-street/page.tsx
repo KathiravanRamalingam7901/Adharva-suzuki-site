@@ -6,23 +6,35 @@ import Link from 'next/link'
 import { useState } from 'react'
 import ZoomableImageModal from '../../../../components/ZoomableImageModal'
 
-const colorVariants = [
+const editions = [
   {
-    name: 'Metallic Matte Green',
-    color: 'Standard',
-    hex: '#2D3E35',
-    image: '/images/scooters/Burgman Street/Burgman Street Standard Edition.png',
+    id: 'standard',
+    name: 'Standard Edition',
+    colors: [
+      { name: 'Metallic Matte Black', hex: '#1B1B1B', image: '/images/scooters/Burgman Street/Burgman Street Standard Edition/Metallic Matte Black.png' },
+      { name: 'Pearl Mirage White', hex: '#F5F5F5', image: '/images/scooters/Burgman Street/Burgman Street Standard Edition/Pearl Mirage White.png' },
+      { name: 'Metallic Matte Titanium Silver', hex: '#A8A8A8', image: '/images/scooters/Burgman Street/Burgman Street Standard Edition/Metallic Matte Titanium Silver.png' },
+      { name: 'Pearl Matte Shadow Green', hex: '#2D3E35', image: '/images/scooters/Burgman Street/Burgman Street Standard Edition/Pearl matte Shadow Green.png' },
+      { name: 'Glossy Grey', hex: '#808080', image: '/images/scooters/Burgman Street/Burgman Street Standard Edition/Glossy grey.png' },
+    ]
   },
   {
-    name: 'Metallic Matte Green',
-    color: 'Ride Connect',
-    hex: '#2D3E35',
-    image: '/images/scooters/Burgman Street/Burgman Street Ride Connect Edition.png',
-  },
+    id: 'ride-connect',
+    name: 'Ride Connect Edition',
+    colors: [
+      { name: 'Matte Blue', hex: '#1E3A8A', image: '/images/scooters/Burgman Street/Burgman Street Ride Connect Edition/Matte Blue.png' },
+      { name: 'Metallic Matte Black No.2', hex: '#1B1B1B', image: '/images/scooters/Burgman Street/Burgman Street Ride Connect Edition/Metallic Matte Black No.2.png' },
+      { name: 'Matallic Matte Black', hex: '#1B1B1B', image: '/images/scooters/Burgman Street/Burgman Street Ride Connect Edition/Matallic Matte Black.png' },
+      { name: 'Pearl Mirage White', hex: '#F5F5F5', image: '/images/scooters/Burgman Street/Burgman Street Ride Connect Edition/Pearl Mirage White.png' },
+      { name: 'Metallic Matte Titanium Silver', hex: '#A8A8A8', image: '/images/scooters/Burgman Street/Burgman Street Ride Connect Edition/Metallic Matte Titanium Silver.png' },
+      { name: 'Pearl Matte Shadow Green', hex: '#2D3E35', image: '/images/scooters/Burgman Street/Burgman Street Ride Connect Edition/Pearl Matte Shadow Green.png' },
+    ]
+  }
 ]
 
 export default function BurgmanStreetPage() {
-  const [selectedColor, setSelectedColor] = useState(colorVariants[0])
+  const [selectedEdition, setSelectedEdition] = useState(editions[0])
+  const [selectedColor, setSelectedColor] = useState(editions[0].colors[3]) // Default to green if available, or first
   const [isZoomed, setIsZoomed] = useState(false)
 
   // Parallax Motion Values
@@ -268,6 +280,29 @@ export default function BurgmanStreetPage() {
               </motion.p>
 
 
+              {/* Edition Select */}
+              <div className="mb-6 sm:mb-8">
+                <h3 className="text-lg font-bold text-gray-900 mb-3">Select Edition:</h3>
+                <div className="flex gap-4">
+                  {editions.map((edition) => (
+                    <button
+                      key={edition.id}
+                      onClick={() => {
+                        setSelectedEdition(edition)
+                        setSelectedColor(edition.colors[0])
+                      }}
+                      className={`px-4 py-2 rounded-full text-sm font-bold transition-all ${
+                        selectedEdition.id === edition.id
+                          ? 'bg-suzuki-blue text-white'
+                          : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                      }`}
+                    >
+                      {edition.name}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
               {/* Color Variants - Enhanced for mobile */}
               <div className="mb-6 sm:mb-8">
                 <motion.h3
@@ -277,7 +312,7 @@ export default function BurgmanStreetPage() {
                   viewport={{ once: true }}
                   transition={{ delay: 0.4 }}
                 >
-                  Available Editions:
+                  Available Colors:
                 </motion.h3>
                 <motion.div
                   className="flex flex-wrap gap-3 sm:gap-4 justify-center sm:justify-start"
@@ -286,7 +321,7 @@ export default function BurgmanStreetPage() {
                   viewport={{ once: true }}
                   transition={{ delay: 0.5 }}
                 >
-                  {colorVariants.map((color, index) => (
+                  {selectedEdition.colors.map((color, index) => (
                     <motion.button
                       key={color.name}
                       onClick={() => setSelectedColor(color)}
@@ -315,7 +350,7 @@ export default function BurgmanStreetPage() {
                         whileHover={{ scale: 1.2, rotate: 360 }}
                         transition={{ duration: 0.5 }}
                       />
-                      <span className={`text-xs sm:text-sm font-medium text-center ${selectedColor.name === color.name ? 'text-suzuki-blue font-bold' : 'text-gray-600'
+                      <span className={`text-[10px] sm:text-xs font-medium text-center max-w-[80px] ${selectedColor.name === color.name ? 'text-suzuki-blue font-bold' : 'text-gray-600'
                         }`}>
                         {color.name}
                       </span>

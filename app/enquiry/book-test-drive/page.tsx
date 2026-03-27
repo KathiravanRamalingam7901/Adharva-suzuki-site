@@ -44,9 +44,25 @@ export default function BookTestDrivePage() {
       const selectedDate = new Date(formData.preferredDate)
       const today = new Date()
       today.setHours(0, 0, 0, 0)
-      if (selectedDate < today) newErrors.preferredDate = 'Cannot be in past'
+      if (selectedDate < today) {
+        newErrors.preferredDate = 'Cannot be in past'
+      }
     }
-    if (!formData.preferredTime) newErrors.preferredTime = 'Required'
+
+    if (!formData.preferredTime) {
+      newErrors.preferredTime = 'Required'
+    } else if (formData.preferredDate) {
+      const todayDate = new Date().toLocaleDateString('en-CA')
+      if (formData.preferredDate === todayDate) {
+        const now = new Date()
+        const [hours, minutes] = formData.preferredTime.split(':').map(Number)
+        const selectedTime = new Date()
+        selectedTime.setHours(hours, minutes, 0, 0)
+        if (selectedTime < now) {
+          newErrors.preferredTime = 'Time cannot be in past'
+        }
+      }
+    }
     if (!formData.location.trim()) newErrors.location = 'Required'
 
     setErrors(newErrors)
@@ -72,14 +88,14 @@ export default function BookTestDrivePage() {
     setFormMessage(null)
 
     if (!validateForm()) {
-      setFormMessage('Please fix the errors highlighted below.')
+      setFormMessage('Please fix the errors highlighted above.')
       return
     }
 
     setIsSubmitting(true)
 
     try {
-      const TARGET_EMAIL = "care.suzuki@adharvaa.in"
+      const TARGET_EMAIL = "sales.suzuki@adharvaa.in"
       const endpoint = `https://formsubmit.co/${TARGET_EMAIL}`
 
       const formDataToSend = new FormData()
@@ -234,6 +250,7 @@ export default function BookTestDrivePage() {
                     name="preferredDate"
                     value={formData.preferredDate}
                     onChange={handleChange}
+                    min={new Date().toLocaleDateString('en-CA')}
                     className={`w-full px-4 py-3 rounded-lg border ${errors.preferredDate ? 'border-red-500 bg-red-50' : 'border-slate-200 bg-slate-50'} focus:outline-none focus:ring-2 focus:ring-suzuki-blue/20 transition-all`}
                   />
                   {errors.preferredDate && <p className="mt-1 text-xs text-red-500">{errors.preferredDate}</p>}
@@ -247,6 +264,7 @@ export default function BookTestDrivePage() {
                     name="preferredTime"
                     value={formData.preferredTime}
                     onChange={handleChange}
+                    min={formData.preferredDate === new Date().toLocaleDateString('en-CA') ? new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }) : undefined}
                     className={`w-full px-4 py-3 rounded-lg border ${errors.preferredTime ? 'border-red-500 bg-red-50' : 'border-slate-200 bg-slate-50'} focus:outline-none focus:ring-2 focus:ring-suzuki-blue/20 transition-all`}
                   />
                   {errors.preferredTime && <p className="mt-1 text-xs text-red-500">{errors.preferredTime}</p>}

@@ -95,10 +95,11 @@ If you prefer to deploy manually:
 │   │   └── scooters/      # Scooters page
 │   └── page.tsx           # Homepage
 ├── components/             # React components
-│   ├── MotorcycleVariant.tsx  # Motorcycle variant with color selector
-│   ├── BikeCarousel.tsx       # Bike carousel component
+│   ├── MotorcycleVariant.tsx # Motorcycle variant with color selector
 │   ├── Hero.tsx               # Hero section
 │   ├── Navbar.tsx             # Navigation bar
+│   ├── Footer.tsx             # Footer section
+│   ├── Contact.tsx            # Contact form component
 │   └── ...
 ├── public/                 # Static assets
 │   └── images/            # Image files
