@@ -53,7 +53,7 @@ const scooters = [
     name: 'Burgman Street',
     description: 'Maxi-styled luxury scooter for premium comfort.',
     category: 'Scooter',
-    image: '/images/scooters/Burgman Street/Burgman Street Standard Edition.png',
+    image: '/images/scooters/Burgman Street/Burgman Street Standard Edition/Pearl Mirage White.png',
     link: '/products/scooters/burgman-street',
     color: 'rgba(30, 41, 59, 0.05)', // Slate
   },
