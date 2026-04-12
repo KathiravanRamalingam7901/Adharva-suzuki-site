@@ -27,10 +27,10 @@ const scooterCards: ScooterCard[] = [
     cardImage: '/images/scooters/e-access/hero-desktop.jpg',
     link: '/products/scooters/e-access',
     variants: [
-      { name: 'Metallic Mat Black No.2 / Metallic Mat Bordeaux Red', image: '/images/scooters/e-access/variant-black.png' },
-      { name: 'Pearl Grace White / Metallic Mat Fibroin Gray', image: '/images/scooters/e-access/variant-white.png' },
-      { name: 'Pearl Jade Green / Metallic Mat Fibroin Gray', image: '/images/scooters/e-access/variant-green.png' },
-      { name: 'Metallic Mat Blue No.2 / Metallic Mat Fibroin Gray', image: '/images/scooters/e-access/variant-blue.png' },
+      { name: 'Metallic Mat Black & Metallic Mat Bordeaux Red', image: '/images/scooters/e-access/variant-black.png' },
+      { name: 'Pearl Grace White & Metallic Mat Fibroin Gray', image: '/images/scooters/e-access/variant-white.png' },
+      { name: 'Pearl Jabe Green & Metallic Mat Fibroin Gray', image: '/images/scooters/e-access/variant-green.png' },
+      { name: 'Metallic Mat Stellar Blue & Metallic Mat Fibroin Gray', image: '/images/scooters/e-access/variant-blue.png' },
     ],
   },
   {

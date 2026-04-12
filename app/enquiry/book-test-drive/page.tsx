@@ -285,6 +285,7 @@ export default function BookTestDrivePage() {
                     <option value="Udumalaipettai">Udumalaipettai</option>
                     <option value="Coimbatore - Sundarapuram">Coimbatore - Sundarapuram</option>
                     <option value="Dharapuram">Dharapuram</option>
+                    <option value="Selvapuram">Selvapuram</option>
                   </select>
                   {errors.location && <p className="mt-1 text-xs text-red-500">{errors.location}</p>}
                 </div>

@@ -1,31 +1,40 @@
 'use client'
 
 import { motion } from 'framer-motion'
+import Link from 'next/link'
+import { useState, useEffect } from 'react'
 import Image from 'next/image'
-import { useState } from 'react'
 
-// Gallery images - using downloaded images
-const galleryImages = [
-  '/images/703249_7b7050500ac24d73833e84dd126f7eee~mv2.jpg',
-  '/images/aedd32_212295d3579f44d4a800fc13b4fc1ad9~mv2.jpg',
-  '/images/aedd32_afd36740f5e847e0ab3b5d7e7ca60653~mv2.jpg',
-  '/images/aedd32_a0ab81273678476f86106450dc5b8209~mv2.jpg',
-  '/images/703249_880250e1360145ceb1c860bee04a1687~mv2.jpg',
-  '/images/C75A1547_JPG.jpg',
-  '/images/0H4A3029 (1).jpg',
-  '/images/aedd32_12362117de9e40849829a544cfaae1a2~mv2.png',
-  '/images/aedd32_c1708bcf4b004c2e9621d23d65bef307~mv2.png',
-  '/images/aedd32_f299d89988834e919d3ea50ec46cf563~mv2.png',
-  '/images/aedd32_91c76091f3b8496787cbdbdaa2d4f415~mv2.png',
-  '/images/aedd32_b16aa5136e804c38b36a0f9e919c6848~mv2.png',
-]
+interface Album {
+  name: string
+  path: string
+  thumbnail?: string
+}
 
 export default function GalleryPage() {
-  const [selectedImage, setSelectedImage] = useState<string | null>(null)
+  const [albums, setAlbums] = useState<Album[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+
+  useEffect(() => {
+    async function fetchAlbums() {
+      try {
+        const response = await fetch('/api/gallery/folders')
+        const data = await response.json()
+        if (Array.isArray(data)) {
+          setAlbums(data)
+        }
+      } catch (error) {
+        console.error('Failed to fetch albums:', error)
+      } finally {
+        setIsLoading(false)
+      }
+    }
+    fetchAlbums()
+  }, [])
 
   return (
     <div className="min-h-screen pt-24 bg-white text-slate-900">
-      {/* Hero */}
+      {/* Hero Section */}
       <motion.section
         className="relative overflow-hidden"
         initial={{ opacity: 0, y: 20 }}
@@ -51,7 +60,7 @@ export default function GalleryPage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
           >
-            Explore the world of
+            Experience
             <span className="block text-suzuki-red">Adharvaa Suzuki</span>
           </motion.h1>
           <motion.p
@@ -60,75 +69,62 @@ export default function GalleryPage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
           >
-            Discover our collection of high-performance motorcycles and stylish scooters.
-            Witness the blend of precision engineering and urban elegance.
+            Explore our albums of high-performance motorcycles, stylish scooters, and memorable customer moments.
           </motion.p>
         </div>
       </motion.section>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
-        <div className="grid md:grid-cols-3 gap-6">
-          {galleryImages.map((imageUrl, index) => (
-            <motion.div
-              key={index}
-              initial={{ opacity: 0, scale: 0.8 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: index * 0.1 }}
-              whileHover={{ scale: 1.05 }}
-              onClick={() => setSelectedImage(imageUrl)}
-              className="relative h-64 bg-gradient-to-br from-gray-200 to-gray-300 rounded-lg overflow-hidden cursor-pointer group"
-            >
-              <Image
-                src={imageUrl}
-                alt={`Gallery Image ${index + 1}`}
-                fill
-                className="object-cover group-hover:scale-110 transition-transform duration-500"
-                onError={(e) => {
-                  const target = e.target as HTMLImageElement
-                  target.style.display = 'none'
-                  const parent = target.parentElement
-                  if (parent) {
-                    parent.innerHTML = '<div class="text-6xl flex items-center justify-center h-full bg-gray-200">🏍️</div>'
-                  }
-                }}
-              />
-              <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 transition-all duration-300" />
-            </motion.div>
-          ))}
-        </div>
+        {isLoading ? (
+          <div className="flex justify-center items-center h-64">
+            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-suzuki-blue"></div>
+          </div>
+        ) : albums.length > 0 ? (
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-10">
+            {albums.map((album, index) => (
+              <motion.div
+                key={album.path}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: index * 0.1 }}
+                whileHover={{ y: -10 }}
+              >
+                <Link href={`/gallery/${encodeURIComponent(album.name)}`} className="group block">
+                  <div className="relative h-80 bg-slate-100 rounded-[2rem] overflow-hidden shadow-lg group-hover:shadow-2xl transition-all duration-300">
+                    {/* Album Thumbnail */}
+                    {album.thumbnail ? (
+                      <Image
+                        src={album.thumbnail}
+                        alt={album.name}
+                        fill
+                        className="object-cover group-hover:scale-110 transition-transform duration-700"
+                      />
+                    ) : (
+                      <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-slate-100 to-slate-200">
+                        <span className="text-6xl group-hover:scale-110 transition-transform duration-500">📁</span>
+                      </div>
+                    )}
+                    
+                    {/* Elegant Overlay */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent flex flex-col justify-end p-8">
+                      <div className="overflow-hidden">
+                        <h3 className="text-2xl font-bold text-white group-hover:text-suzuki-red transition-colors duration-300 translate-y-0 group-hover:translate-y-[-4px] transform">
+                          {album.name}
+                        </h3>
+                      </div>
+                      <div className="h-[2px] w-0 group-hover:w-full bg-suzuki-red transition-all duration-500 mb-2"></div>
+                      <p className="text-white/60 text-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                        View Stories & Media →
+                      </p>
+                    </div>
+                  </div>
+                </Link>
+              </motion.div>
+            ))}
+          </div>
+        ) : null}
       </div>
-
-      {/* Modal for selected image */}
-      {selectedImage && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          className="fixed inset-0 bg-black bg-opacity-90 z-50 flex items-center justify-center p-4"
-          onClick={() => setSelectedImage(null)}
-        >
-          <motion.div
-            initial={{ scale: 0.8 }}
-            animate={{ scale: 1 }}
-            className="relative max-w-5xl max-h-[90vh]"
-          >
-            <Image
-              src={selectedImage}
-              alt="Full size gallery image"
-              width={1200}
-              height={800}
-              className="object-contain rounded-lg max-w-full max-h-full"
-            />
-            <button
-              onClick={() => setSelectedImage(null)}
-              className="absolute top-4 right-4 text-white bg-black bg-opacity-50 rounded-full p-2 hover:bg-opacity-75"
-            >
-              ✕
-            </button>
-          </motion.div>
-        </motion.div>
-      )}
     </div>
   )
 }

@@ -56,7 +56,7 @@ const serviceFeatures = [
 ]
 
 const stats = [
-  { number: '6+', label: 'Branches' },
+  { number: '7+', label: 'Branches' },
   { number: '10,000+', label: 'Vehicles Serviced' },
   { number: '15+', label: 'Years Experience' },
   { number: '24/7', label: 'Support' },

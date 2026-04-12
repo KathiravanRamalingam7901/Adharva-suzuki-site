@@ -8,25 +8,25 @@ import ZoomableImageModal from '../../../../components/ZoomableImageModal'
 
 const colorVariants = [
   {
-    name: 'Metallic Mat Black / Mat Bordeaux Red',
+    name: 'Metallic Mat Black & Metallic Mat Bordeaux Red',
     color: 'CUU',
     hex: '#1A1A1A',
     image: '/images/scooters/e-access/variant-black.png',
   },
   {
-    name: 'Pearl Grace White / Mat Fibroin Gray',
+    name: 'Pearl Grace White & Metallic Mat Fibroin Gray',
     color: 'C1B',
     hex: '#F0F0F0',
     image: '/images/scooters/e-access/variant-white.png',
   },
   {
-    name: 'Pearl Jade Green / Mat Fibroin Gray',
+    name: 'Pearl Jabe Green & Metallic Mat Fibroin Gray',
     color: 'C1A',
     hex: '#5F7367',
     image: '/images/scooters/e-access/variant-green.png',
   },
   {
-    name: 'Metallic Mat Blue / Mat Fibroin Gray',
+    name: 'Metallic Mat Stellar Blue & Metallic Mat Fibroin Gray',
     color: 'CAU',
     hex: '#2B4B7B',
     image: '/images/scooters/e-access/variant-blue.png',
@@ -69,7 +69,7 @@ const specs = [
 
 export default function EAccessPage() {
   const [selectedColor, setSelectedColor] = useState(colorVariants[0])
-  const [isZoomed, setIsZoomed] = useState(false)
+  const [zoomedImage, setZoomedImage] = useState<{src: string, alt: string} | null>(null)
 
   // Motion Values for interactivity
   const mouseX = useMotionValue(0)
@@ -77,13 +77,13 @@ export default function EAccessPage() {
   const springX = useSpring(mouseX, { stiffness: 100, damping: 30 })
   const springY = useSpring(mouseY, { stiffness: 100, damping: 30 })
 
-  const openZoom = () => {
-    setIsZoomed(true)
+  const openZoom = (src: string, alt: string) => {
+    setZoomedImage({ src, alt })
     document.body.style.overflow = 'hidden'
   }
 
   const closeZoom = () => {
-    setIsZoomed(false)
+    setZoomedImage(null)
     document.body.style.overflow = 'unset'
   }
 
@@ -182,7 +182,7 @@ export default function EAccessPage() {
                 mouseX.set(0);
                 mouseY.set(0);
               }}
-              onClick={openZoom}
+              onClick={() => openZoom(selectedColor.image, selectedColor.name)}
             >
               <AnimatePresence mode="wait">
                 <motion.div
@@ -213,32 +213,74 @@ export default function EAccessPage() {
             
             {/* Color Selector */}
             <div className="mt-10">
-              <h3 className="text-sm font-bold text-slate-500 uppercase tracking-widest mb-6">Available Colours</h3>
-              <div className="flex flex-wrap gap-4">
+              <div className="flex flex-col mb-6">
+                <h3 className="text-sm font-bold text-slate-500 uppercase tracking-widest mb-2">Available Colours</h3>
+                <p className="text-suzuki-blue font-bold text-lg transition-all duration-300">
+                  {selectedColor.name}
+                </p>
+              </div>
+              <div className="flex flex-wrap gap-5">
                 {colorVariants.map((variant) => (
                   <motion.button
                     key={variant.color}
                     onClick={() => setSelectedColor(variant)}
-                    className={`group relative flex flex-col items-center gap-3 p-3 rounded-2xl transition-all duration-300 ${
+                    className={`group relative p-1 rounded-full transition-all duration-300 ${
                       selectedColor.color === variant.color 
-                        ? 'bg-slate-100 scale-105 shadow-inner' 
-                        : 'hover:bg-slate-50'
+                        ? 'ring-2 ring-suzuki-blue ring-offset-4 scale-110' 
+                        : 'hover:scale-110'
                     }`}
                     whileHover={{ y: -4 }}
                     whileTap={{ scale: 0.95 }}
                   >
                     <div 
-                      className={`w-12 h-12 rounded-full border-2 transition-transform duration-300 ${
-                        selectedColor.color === variant.color ? 'border-suzuki-blue scale-110 shadow-lg' : 'border-slate-200'
-                      }`}
+                      className="w-12 h-12 rounded-full border border-slate-200 shadow-md"
                       style={{ backgroundColor: variant.hex }}
                     />
-                    <span className={`text-[10px] font-bold uppercase max-w-[80px] text-center ${
-                      selectedColor.color === variant.color ? 'text-suzuki-blue' : 'text-slate-400'
-                    }`}>
-                      {variant.color}
-                    </span>
                   </motion.button>
+                ))}
+              </div>
+            </div>
+
+            {/* 3 Things to Know Section - Now on the left */}
+            <div className="mt-16">
+              <h3 className="text-xl font-bold mb-6">3 Things to Know About E Access</h3>
+              <div className="space-y-6">
+                {[
+                  {
+                    title: 'Colour TFT LCD',
+                    desc: 'Colour TFT LCD has good visibility in day and night displaying real-time data. Also has Bluetooth connectivity.',
+                    image: '/images/products/e-access/highlight-tft-real.jpg'
+                  },
+                  {
+                    title: 'Smart Performance',
+                    desc: 'With its seamless throttle response, ride modes help extract the best range/performance as required.',
+                    image: '/images/products/e-access/highlight-throttle-real.jpg'
+                  },
+                  {
+                    title: 'Superior Comfort',
+                    desc: 'Suspension setup is excellent in terms of comfort and handling characteristics.',
+                    image: '/images/products/e-access/highlight-suspension-real.jpg'
+                  }
+                ].map((item, i) => (
+                  <motion.div
+                    key={i}
+                    className="bg-slate-50 rounded-3xl overflow-hidden border border-slate-100 flex items-center group cursor-zoom-in"
+                    whileHover={{ x: 10 }}
+                    onClick={() => openZoom(item.image, item.title)}
+                  >
+                    <div className="relative w-32 h-24 sm:w-40 sm:h-28 overflow-hidden flex-shrink-0">
+                      <Image
+                        src={item.image}
+                        alt={item.title}
+                        fill
+                        className="object-cover group-hover:scale-110 transition-transform duration-700"
+                      />
+                    </div>
+                    <div className="p-4 sm:p-5 flex flex-col">
+                      <h4 className="font-bold text-sm mb-1 group-hover:text-suzuki-blue transition-colors">{item.title}</h4>
+                      <p className="text-slate-600 text-[11px] leading-relaxed line-clamp-2">{item.desc}</p>
+                    </div>
+                  </motion.div>
                 ))}
               </div>
             </div>
@@ -308,9 +350,9 @@ export default function EAccessPage() {
       </div>
 
       <ZoomableImageModal
-        src={selectedColor.image}
-        alt={`e-Access ${selectedColor.name}`}
-        isOpen={isZoomed}
+        src={zoomedImage?.src || ''}
+        alt={zoomedImage?.alt || ''}
+        isOpen={!!zoomedImage}
         onClose={closeZoom}
       />
     </div>

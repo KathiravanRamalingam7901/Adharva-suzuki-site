@@ -120,6 +120,7 @@ const branches = [
   { id: 'udumalaipettai', name: 'Udumalaipettai' },
   { id: 'coimbatore-sundarapuram', name: 'Coimbatore - Sundarapuram' },
   { id: 'dharapuram', name: 'Dharapuram' },
+  { id: 'selvapuram', name: 'Selvapuram' },
 ]
 
 const cardVariants = {
