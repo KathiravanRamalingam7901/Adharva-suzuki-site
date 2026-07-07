@@ -1,130 +1,307 @@
 'use client'
 
-import { motion, AnimatePresence, useMotionValue, useSpring, useTransform } from 'framer-motion'
+import { motion, AnimatePresence, useMotionValue, useSpring } from 'framer-motion'
 import Image from 'next/image'
 import Link from 'next/link'
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import ZoomableImageModal from '../../../../components/ZoomableImageModal'
 
 const colorVariants = [
   {
-    name: 'Yellow',
-    color: 'Yellow',
-    hex: '#FFD700',
-    image: '/images/bikes/v-strom-sx/v-strom-sx-yellowColour.png',
+    "name": "Yellow",
+    "hex": "#FFD700",
+    "image": "/images/bikes/v-strom-sx/v-strom-sx-yellowColour.png"
   },
   {
-    name: 'Red',
-    color: 'Red',
-    hex: '#DC2626',
-    image: '/images/bikes/v-strom-sx/V-strom-sx-redColour.png',
+    "name": "Red",
+    "hex": "#DC2626",
+    "image": "/images/bikes/v-strom-sx/V-strom-sx-redColour.png"
   },
   {
-    name: 'Black',
-    color: 'Black',
-    hex: '#000000',
-    image: '/images/bikes/v-strom-sx/V-strom-sx-blackColour.png',
-  },
+    "name": "Black",
+    "hex": "#000000",
+    "image": "/images/bikes/v-strom-sx/V-strom-sx-blackColour.png"
+  }
 ]
 
-export default function VStromSXPage() {
+const TABS = [
+  { id: 'introduction',      label: 'Introduction' },
+  { id: 'styling',           label: 'Styling' },
+  { id: 'engine-performance',label: 'Engine Performance' },
+  { id: 'chassis',           label: 'Chassis Design' },
+  { id: 'electronics',       label: 'Electronic Design' },
+  { id: 'ride-connect',      label: 'Suzuki Ride Connect' },
+  { id: 'accessories',       label: 'Accessories' },
+  { id: 'specifications',    label: 'Specifications' },
+]
+
+const specTabs = [
+  {
+    "id": "engine",
+    "label": "Engine",
+    "rows": [
+      { "label": "Engine Type",        "value": "4-Stroke, Single-Cylinder, Oil-Cooled, SOHC" },
+      { "label": "Valve System",        "value": "4 Valve" },
+      { "label": "Bore x Stroke",       "value": "76.0mm x 54.9mm" },
+      { "label": "Displacement",        "value": "249 cm³" },
+      { "label": "Compression Ratio",   "value": "10.7 : 1" },
+      { "label": "Max Power",           "value": "26.5 PS @ 9,300 rpm" },
+      { "label": "Max Torque",          "value": "22.2 Nm @ 7,300 rpm" },
+      { "label": "Fuel System",         "value": "Fuel Injection" },
+      { "label": "Starter System",      "value": "Electric" },
+      { "label": "Lubrication System",  "value": "Wet Sump" },
+      { "label": "Transmission",        "value": "6-Speed Constant Mesh" }
+    ]
+  },
+  {
+    "id": "dimensions",
+    "label": "Dimensions & Weight",
+    "rows": [
+      { "label": "Overall Length",      "value": "2,180 mm" },
+      { "label": "Overall Width",       "value": "880 mm" },
+      { "label": "Overall Height",      "value": "1,355 mm" },
+      { "label": "Wheel Base",          "value": "1,440 mm" },
+      { "label": "Ground Clearance",    "value": "205 mm" },
+      { "label": "Seat Height",         "value": "835 mm" },
+      { "label": "Kerb Mass",           "value": "167 kg" },
+      { "label": "Fuel Tank Capacity",  "value": "12 L" }
+    ]
+  },
+  {
+    "id": "chassis",
+    "label": "Chassis & Brakes",
+    "rows": [
+      { "label": "Frame Type",          "value": "Steel Trellis Frame" },
+      { "label": "Front Suspension",    "value": "Telescopic, Coil Spring, Oil Damped" },
+      { "label": "Rear Suspension",     "value": "Swing Arm Type, Coil Spring, Oil Damped" },
+      { "label": "Front Brake",         "value": "Disc, Single" },
+      { "label": "Rear Brake",          "value": "Disc" },
+      { "label": "ABS",                 "value": "Dual Channel ABS (Standard)" },
+      { "label": "Front Tyre",          "value": "100/90-19M/C 57S, Tubeless" },
+      { "label": "Rear Tyre",           "value": "140/70-17M/C 66S, Tubeless" },
+      { "label": "Rake / Trail",        "value": "27° / 97 mm" },
+      { "label": "Ignition System",     "value": "Electronic Ignition" },
+      { "label": "Battery",             "value": "Maintenance Free, 12V 6Ah" },
+      { "label": "Headlight & Tail Light", "value": "LED" }
+    ]
+  }
+]
+
+
+const bikeData = {
+  "category": "Adventure Touring",
+  "namePart1": "V-STROM",
+  "namePart2": "SX",
+  "fullName": "V-STROM SX",
+  "tagline": "Designed for long-distance cruising and versatile off-road adventures. Experience the Master of All Adventures.",
+  "brochureUrl": "https://www.adharvaasuzuki.com/_files/ugd/703249_680e034de1a7497da63946e7597d9504.pdf",
+  "description": "The V-STROM SX is your gateway to adventure — a motorcycle that combines the rugged spirit of a true adventure tourer with the agility of a sport bike. Whether conquering mountain passes or navigating city streets, it adapts to every challenge.",
+  "quickStats": [
+    {
+      "label": "Engine",
+      "value": "249 cc"
+    },
+    {
+      "label": "Max Power",
+      "value": "26.5 ps"
+    },
+    {
+      "label": "Max Torque",
+      "value": "22.2 Nm"
+    },
+    {
+      "label": "Fuel Tank",
+      "value": "12 L"
+    }
+  ],
+  "highlightsStrip": [
+    {
+      "icon": "⚡",
+      "label": "Max Power",
+      "value": "26.5 ps",
+      "sub": "@9300 rpm"
+    },
+    {
+      "icon": "🔩",
+      "label": "Max Torque",
+      "value": "22.2 Nm",
+      "sub": "@7300 rpm"
+    },
+    {
+      "icon": "👷",
+      "label": "Cooling",
+      "value": "SOCS",
+      "sub": "Oil Cooling"
+    },
+    {
+      "icon": "🛑",
+      "label": "Braking",
+      "value": "Dual Ch.",
+      "sub": "ABS"
+    },
+    {
+      "icon": "⛽",
+      "label": "Fuel Tank",
+      "value": "12 L",
+      "sub": "Capacity"
+    },
+    {
+      "icon": "🏍️",
+      "label": "Kerb Mass",
+      "value": "167 kg",
+      "sub": "Ready to Ride"
+    }
+  ],
+  "featuresList": [
+    {
+      "icon": "💡",
+      "title": "Aggressive LED Headlamp",
+      "desc": "Sharp dual-LED headlight with beak cowl gives a powerful adventure touring appearance."
+    },
+    {
+      "icon": "👷",
+      "title": "Suzuki Oil Cooling (SOCS)",
+      "desc": "Engine oil cooling keeps the engine at peak temperature, giving reliable power outputs."
+    },
+    {
+      "icon": "🗺️",
+      "title": "Suzuki Ride Connect",
+      "desc": "Smartphone connectivity with turn-by-turn navigation, Call/SMS alerts, and ETA displays."
+    },
+    {
+      "icon": "🔧",
+      "title": "Steel Trellis Frame",
+      "desc": "Tough trellis chassis delivers agility on tarmac and complete stability on gravel and dirt."
+    },
+    {
+      "icon": "🚧",
+      "title": "Dual Channel ABS",
+      "desc": "Standard dual-channel anti-lock braking ensures secure, controlled stopping on wet roads."
+    },
+    {
+      "icon": "🏞️",
+      "title": "Adventure Ergonomics",
+      "desc": "Generous ground clearance (205mm) and a roomy adventure-style seat position for comfort."
+    }
+  ],
+  "accessoriesList": [
+    {
+      "icon": "🧳",
+      "title": "Genuine Pannier Case",
+      "desc": "High-density hard side cases for touring luggage capacity, custom integrated."
+    },
+    {
+      "icon": "🛡️",
+      "title": "Rugged Engine Guard",
+      "desc": "Tough steel underbelly bash protection from rocks and gravel off-road."
+    },
+    {
+      "icon": "💨",
+      "title": "Wind Protection Screen",
+      "desc": "Specially engineered tall touring screen to reduce highway buffeting."
+    }
+  ]
+}
+
+function SectionHeader({ eyebrow, title, accent, subtitle }: {
+  eyebrow: string; title: string; accent: string; subtitle: string
+}) {
+  return (
+    <motion.div className="text-center"
+      initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }} transition={{ duration: 0.6 }}>
+      <p className="text-xs uppercase tracking-[0.25em] text-suzuki-blue mb-2 font-bold">{eyebrow}</p>
+      <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-gray-900 mb-4">
+        {title} <span className="text-suzuki-red">{accent}</span>
+      </h2>
+      <p className="text-gray-500 max-w-2xl mx-auto text-base sm:text-lg">{subtitle}</p>
+    </motion.div>
+  )
+}
+
+export default function BikePage() {
   const [selectedColor, setSelectedColor] = useState(colorVariants[0])
-  const [isZoomed, setIsZoomed] = useState(false)
+  const [isZoomed, setIsZoomed]           = useState(false)
+  const [activeTab, setActiveTab]         = useState('overview')
+  const [specTab, setSpecTab]             = useState('engine')
 
-  // Parallax Motion Values
-  const mouseX = useMotionValue(0)
-  const mouseY = useMotionValue(0)
-
-  // Spring physics for smooth movement
+  const mouseX  = useMotionValue(0)
+  const mouseY  = useMotionValue(0)
   const springX = useSpring(mouseX, { stiffness: 100, damping: 30 })
   const springY = useSpring(mouseY, { stiffness: 100, damping: 30 })
+  const tabBarRef = useRef<HTMLDivElement>(null)
 
-  const openZoom = () => {
-    setIsZoomed(true)
-    document.body.style.overflow = 'hidden'
-  }
+  const openZoom  = () => { setIsZoomed(true);  document.body.style.overflow = 'hidden' }
+  const closeZoom = () => { setIsZoomed(false); document.body.style.overflow = 'unset'  }
 
-  const closeZoom = () => {
-    setIsZoomed(false)
-    document.body.style.overflow = 'unset'
+  useEffect(() => {
+    const onScroll = () => {
+      const offset = 80 + (tabBarRef.current?.offsetHeight ?? 56) + 15
+      let current = TABS[0].id
+      for (const tab of TABS) {
+        const el = document.getElementById('section-' + tab.id)
+        if (el && el.getBoundingClientRect().top <= offset) {
+          current = tab.id
+        }
+      }
+      setActiveTab(current)
+    }
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [])
+
+  const scrollTo = (id: string) => {
+    const el = document.getElementById('section-' + id)
+    if (!el) return
+    const offset = 80 + (tabBarRef.current?.offsetHeight ?? 56)
+    window.scrollTo({ top: el.offsetTop - offset, behavior: 'smooth' })
+    setActiveTab(id)
+    document.getElementById('tab-btn-' + id)?.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' })
   }
 
   return (
     <div className="min-h-screen pt-24 bg-white text-slate-900">
-      {/* Header Section - Careers Style */}
-      <motion.section
-        className="relative overflow-hidden"
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.7 }}
-      >
+
+      {/* HERO */}
+      <motion.section className="relative overflow-hidden"
+        initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7 }}>
         <div className="absolute inset-0 bg-gradient-to-br from-white via-sky-100 to-suzuki-blue/20" />
         <div className="absolute -right-20 top-10 w-64 h-64 bg-suzuki-red/10 blur-3xl rounded-full" />
         <div className="absolute -left-24 -bottom-12 w-72 h-72 bg-blue-500/10 blur-3xl rounded-full" />
-
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20">
-          <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.2 }}
-          >
-            <Link href="/products/motorcycles" className="inline-flex items-center text-slate-600 hover:text-suzuki-blue mb-4 transition-colors text-sm font-medium">
+          <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.2 }}>
+            <Link href="/products/motorcycles"
+              className="inline-flex items-center text-slate-600 hover:text-suzuki-blue mb-4 transition-colors text-sm font-medium">
               <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
               </svg>
               Back to Motorcycles
             </Link>
           </motion.div>
-          <motion.p
-            className="text-xs uppercase tracking-[0.25em] text-suzuki-blue mb-3 font-bold"
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.25 }}
-          >
-            Adventure Touring
+          <motion.p className="text-xs uppercase tracking-[0.25em] text-suzuki-blue mb-3 font-bold"
+            initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }}>
+            {bikeData.category}
           </motion.p>
-          <motion.h1
-            className="text-4xl sm:text-5xl md:text-6xl font-extrabold mb-4 text-slate-900"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3, duration: 0.6 }}
-          >
-            V-STROM <span className="text-suzuki-red">SX</span>
+          <motion.h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold mb-4 text-slate-900"
+            initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3, duration: 0.6 }}>
+            {bikeData.namePart1} <span className="text-suzuki-red">{bikeData.namePart2}</span>
           </motion.h1>
-          <motion.p
-            className="text-base sm:text-lg md:text-xl text-slate-700 max-w-3xl leading-relaxed mb-8"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4, duration: 0.6 }}
-          >
-            Designed for long-distance cruising and versatile off-road adventures. Experience the Master of All Adventures with undisputed Suzuki performance.
+          <motion.p className="text-base sm:text-lg md:text-xl text-slate-700 max-w-3xl leading-relaxed mb-8"
+            initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4, duration: 0.6 }}>
+            {bikeData.tagline}
           </motion.p>
-
-          <motion.div
-            className="flex flex-wrap gap-4"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.5, duration: 0.6 }}
-          >
+          <motion.div className="flex flex-wrap gap-4"
+            initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5, duration: 0.6 }}>
             <Link href="/enquiry/get-quote">
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className="bg-suzuki-blue text-white px-8 py-3 rounded-full font-bold shadow-lg shadow-suzuki-blue/20 hover:bg-blue-700 transition-all flex items-center gap-2"
-              >
+              <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}
+                className="bg-suzuki-blue text-white px-8 py-3 rounded-full font-bold shadow-lg hover:bg-blue-700 transition-all">
                 Get Quote
               </motion.button>
             </Link>
-            <a
-              href="https://www.adharvaasuzuki.com/_files/ugd/703249_680e034de1a7497da63946e7597d9504.pdf"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className="bg-white border-2 border-suzuki-blue text-suzuki-blue px-8 py-3 rounded-full font-bold hover:bg-suzuki-blue hover:text-white transition-all flex items-center gap-2"
-              >
+            <a href={bikeData.brochureUrl}
+              target="_blank" rel="noopener noreferrer">
+              <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}
+                className="bg-white border-2 border-suzuki-blue text-suzuki-blue px-8 py-3 rounded-full font-bold hover:bg-suzuki-blue hover:text-white transition-all flex items-center gap-2">
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10" />
                 </svg>
@@ -135,245 +312,425 @@ export default function VStromSXPage() {
         </div>
       </motion.section>
 
-      {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 md:py-20">
-        <div className="grid lg:grid-cols-2 gap-8 sm:gap-12 items-start">
-          {/* Image Section */}
-          <motion.div
-            initial={{ opacity: 0, x: -30, scale: 0.95 }}
-            whileInView={{ opacity: 1, x: 0, scale: 1 }}
-            viewport={{ once: true, margin: "-20px" }}
-            transition={{
-              duration: 0.8,
-              type: "spring",
-              stiffness: 100
-            }}
-            className="lg:sticky lg:top-24"
-          >
-            <motion.div
-              className="relative h-[400px] sm:h-[500px] md:h-[600px] lg:h-[700px] bg-slate-50 rounded-3xl overflow-hidden shadow-2xl cursor-crosshair group"
-              onMouseMove={(e) => {
-                const rect = e.currentTarget.getBoundingClientRect();
-                const x = (e.clientX - rect.left) / rect.width - 0.5;
-                const y = (e.clientY - rect.top) / rect.height - 0.5;
-                mouseX.set(x * 20);
-                mouseY.set(y * 20);
-              }}
-              onMouseLeave={() => {
-                mouseX.set(0);
-                mouseY.set(0);
-              }}
-              onClick={openZoom}
-            >
-              {/* Dynamic Backdrop */}
+      {/* SECTION: OVERVIEW (Top Banner) */}
+      <section id="section-overview" className="scroll-mt-32 bg-white py-12 sm:py-20 border-b border-gray-100">
+        <div className="max-w-[1920px] mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid lg:grid-cols-2 gap-8 sm:gap-12 items-start max-w-7xl mx-auto">
+
+            {/* Sticky bike image */}
+            <motion.div initial={{ opacity: 0, x: -30 }} whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }} transition={{ duration: 0.8, type: 'spring', stiffness: 100 }}
+              className="lg:sticky lg:top-36">
               <motion.div
-                className="absolute inset-0 opacity-20 blur-[100px] pointer-events-none"
-                animate={{
-                  backgroundColor: selectedColor.name.includes('Yellow') ? '#EAB308' :
-                    selectedColor.name.includes('Red') ? '#EF4444' : '#1E293B'
+                className="relative h-[380px] sm:h-[500px] lg:h-[620px] bg-gray-50 rounded-3xl overflow-hidden shadow-xl border border-gray-200 cursor-crosshair group"
+                onMouseMove={(e) => {
+                  const r = e.currentTarget.getBoundingClientRect()
+                  mouseX.set(((e.clientX - r.left) / r.width  - 0.5) * 20)
+                  mouseY.set(((e.clientY - r.top)  / r.height - 0.5) * 20)
                 }}
-                transition={{ duration: 1 }}
-              />
+                onMouseLeave={() => { mouseX.set(0); mouseY.set(0) }}
+                onClick={openZoom}>
+                <motion.div className="absolute inset-0 opacity-20 blur-[100px] pointer-events-none"
+                  animate={{ backgroundColor: selectedColor.hex }} transition={{ duration: 1 }} />
+                <motion.div className="relative w-full h-full flex items-center justify-center z-10"
+                  style={{ rotateX: springY, rotateY: springX, transformStyle: 'preserve-3d' }}>
+                  <AnimatePresence mode="wait">
+                    <motion.div key={selectedColor.name}
+                      initial={{ opacity: 0, scale: 0.85, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }}
+                      exit={{ opacity: 0, scale: 0.85, y: -20 }}
+                      transition={{ type: 'spring', stiffness: 100, damping: 20 }}
+                      className="relative w-[90%] h-[90%]">
+                      <Image src={selectedColor.image} alt={'Bike ' + selectedColor.name} fill
+                        className="object-contain drop-shadow-[0_20px_50px_rgba(0,0,0,0.3)]" priority />
+                    </motion.div>
+                  </AnimatePresence>
+                </motion.div>
+                <div className="absolute bottom-4 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-gray-900/80 backdrop-blur-sm text-white text-xs px-4 py-2 rounded-full font-medium tracking-wider pointer-events-none">
+                  Click to Zoom
+                </div>
+              </motion.div>
+            </motion.div>
 
-              {/* Parallax Container */}
-              <motion.div
-                className="relative w-full h-full flex items-center justify-center z-10"
-                style={{
-                  rotateX: springY,
-                  rotateY: springX,
-                  transformStyle: "preserve-3d"
-                }}
-              >
-                <AnimatePresence mode="wait">
-                  <motion.div
-                    key={selectedColor.name}
-                    initial={{ opacity: 0, scale: 0.8, y: 20 }}
-                    animate={{ opacity: 1, scale: 1, y: 0 }}
-                    exit={{ opacity: 0, scale: 0.8, y: -20 }}
-                    transition={{ type: "spring", stiffness: 100, damping: 20 }}
-                    className="relative w-[90%] h-[90%]"
-                  >
-                    <Image
-                      src={selectedColor.image}
-                      alt={selectedColor.name}
-                      fill
-                      className="object-contain drop-shadow-[0_20px_50px_rgba(0,0,0,0.3)]"
-                      priority
-                    />
+            {/* Info card */}
+            <motion.div initial={{ opacity: 0, x: 30 }} whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }} transition={{ duration: 0.8, type: 'spring', stiffness: 100 }}>
+              <div className="bg-white border border-gray-100 rounded-2xl shadow-xl p-6 sm:p-8 lg:p-10">
+                <h2 className="text-3xl sm:text-4xl font-extrabold text-gray-900 mb-3 uppercase tracking-wider">{bikeData.fullName}</h2>
+                <p className="text-gray-500 text-base mb-8 leading-relaxed">
+                  {bikeData.description}
+                </p>
 
-                    {/* Floor Reflection */}
-                    <div className="absolute -bottom-10 left-1/2 -translate-x-1/2 w-4/5 h-20 bg-black/5 blur-2xl rounded-[100%] scale-y-50 -z-10" />
-                  </motion.div>
-                </AnimatePresence>
+                {/* Colour picker */}
+                <div className="mb-8">
+                  <h3 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-4">Choose Your Colour</h3>
+                  <div className="flex gap-3">
+                    {colorVariants.map((c) => (
+                      <button key={c.name} onClick={() => setSelectedColor(c)} title={c.name}
+                        className={'flex flex-col items-center gap-2 p-2.5 rounded-xl transition-all ' + (
+                          selectedColor.name === c.name
+                            ? 'ring-2 ring-suzuki-blue ring-offset-2 bg-gray-50 shadow'
+                            : 'hover:bg-gray-50'
+                        )}>
+                        <div className={'w-11 h-11 rounded-full border-4 transition-all ' + (
+                          selectedColor.name === c.name ? 'border-suzuki-blue scale-110' : 'border-gray-200'
+                        )} style={{ backgroundColor: c.hex }} />
+                        <span className={'text-xs font-bold uppercase ' + (
+                          selectedColor.name === c.name ? 'text-suzuki-blue' : 'text-gray-400'
+                        )}>{c.name}</span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
 
-                {/* Feature Labels - Only visible on desktop hover */}
-                <div className="hidden lg:block absolute inset-0 pointer-events-none">
-                  {[
-                    { label: "Full LED Headlamp", x: "25%", y: "35%" },
-                    { label: "Dual Channel ABS", x: "70%", y: "75%" },
-                    { label: "Suzuki Easy Start System", x: "40%", y: "45%" },
-                    { label: "Versatile Touring Design", x: "15%", y: "60%" }
-                  ].map((feature, i) => (
-                    <motion.div
-                      key={i}
-                      className="absolute group/label flex items-center gap-2"
-                      style={{ left: feature.x, top: feature.y }}
-                      initial={{ opacity: 0 }}
-                      whileInView={{ opacity: 1 }}
-                      transition={{ delay: 0.5 + i * 0.1 }}
-                    >
-                      <div className="bg-white/80 backdrop-blur-sm border border-slate-200 px-3 py-1 rounded-full text-[10px] font-bold text-slate-900 shadow-sm opacity-0 group-hover/label:opacity-100 transition-opacity whitespace-nowrap">
-                        {feature.label}
-                      </div>
+                {/* Quick stats */}
+                <div className="grid grid-cols-2 gap-4 mb-8">
+                  {bikeData.quickStats.map((s) => (
+                    <div key={s.label} className="bg-gray-50 rounded-xl p-4 border border-gray-100">
+                      <p className="text-xs text-gray-400 uppercase tracking-wider font-bold mb-1">{s.label}</p>
+                      <p className="text-xl font-extrabold text-gray-900">{s.value}</p>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="flex flex-col sm:flex-row gap-3">
+                  <motion.button onClick={openZoom} whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}
+                    className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-800 px-5 py-4 rounded-xl font-bold uppercase tracking-widest flex items-center justify-center gap-2 text-xs transition-colors">
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v6m3-3H7" />
+                    </svg>
+                    Zoom View
+                  </motion.button>
+                  <Link href="/enquiry/get-quote" className="flex-1">
+                    <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}
+                      className="w-full bg-suzuki-blue hover:bg-blue-700 text-white px-5 py-4 rounded-xl font-bold uppercase tracking-widest flex items-center justify-center gap-2 shadow-lg shadow-suzuki-blue/20 text-xs transition-colors">
+                      Get a Quote
+                    </motion.button>
+                  </Link>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        </div>
+
+        {/* Highlights strip */}
+        <div className="bg-gradient-to-r from-gray-900 to-gray-800 py-10 sm:py-14 text-white mt-12 sm:mt-20">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h3 className="text-center text-white/60 text-xs font-bold uppercase tracking-[0.2em] mb-8">KEY VEHICLE HIGHLIGHTS</h3>
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-6">
+              {bikeData.highlightsStrip.map((item, i) => (
+                <div key={item.label} className="text-center p-4 border border-white/10 rounded-2xl bg-white/5 hover:bg-white/10 transition-colors">
+                  <span className="text-3xl block mb-2">{item.icon}</span>
+                  <span className="text-white/60 text-[10px] uppercase font-bold block mb-1">{item.label}</span>
+                  <span className="text-white font-extrabold text-lg block">{item.value}</span>
+                  <span className="text-white/50 text-[10px] block mt-0.5">{item.sub}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* STICKY TAB BAR (White style with blue active tab, vertical divider border-r, matching screenshot) */}
+      <div ref={tabBarRef} className="sticky top-[80px] z-40 bg-white border-y border-gray-200 shadow-md">
+        <div className="max-w-7xl mx-auto flex overflow-x-auto scrollbar-hide" style={{ scrollbarWidth: 'none' as any }}>
+          <div className="flex w-full border-l border-gray-200">
+            {TABS.map((tab) => (
+              <button
+                key={tab.id}
+                id={'tab-btn-' + tab.id}
+                onClick={() => scrollTo(tab.id)}
+                className={'flex-1 min-w-[120px] text-center py-4 text-[11px] sm:text-xs font-black uppercase tracking-wider whitespace-nowrap transition-all duration-150 border-r border-gray-200 ' + (
+                  activeTab === tab.id
+                    ? 'bg-suzuki-blue text-white'
+                    : 'text-gray-700 bg-white hover:bg-gray-50 hover:text-suzuki-blue'
+                )}>
+                {tab.label}
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* SECTION: INTRODUCTION */}
+      <section id="section-introduction" className="scroll-mt-32 bg-white py-16 sm:py-24 border-b border-gray-100">
+        <div className="max-w-[1920px] mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-10">
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-gray-900 uppercase tracking-wider mb-2">
+              Introduction to the <span className="text-suzuki-blue">Suzuki V-Strom SX 250</span>
+            </h2>
+          </div>
+          <div className="w-full relative overflow-hidden mb-10 shadow-xl border-y border-gray-200 bg-gray-50">
+            <Image 
+              src="/images/SectionBanner/250121 Suzuki_VStrom250_Banner_3x1_ratio-01.jpg" 
+              alt="V-Strom SX Introduction" 
+              width={1920} 
+              height={1080} 
+              className="w-full h-auto object-cover max-h-[70vh]"
+              unoptimized
+            />
+          </div>
+          <div className="max-w-4xl mx-auto text-center">
+            <p className="text-gray-600 text-lg sm:text-xl leading-relaxed font-medium">
+              Capable of sporty riding in the curves on paved roads and solid handling on unpaved roads, the V-STROM SX can be considered a sport adventure tourer. What makes the V-STROM SX sport adventure tourer so popular is its distinct adventure-inspired looks, comfortable ergonomics and fully-realized utility that fit customer needs in each displacement class.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* SECTION: CHASSIS */}
+      <section id="section-chassis" className="scroll-mt-32 bg-gray-50 py-16 sm:py-24 border-b border-gray-100">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-gray-900 uppercase tracking-wider mb-2">
+              Chassis Design Built for the <span className="text-suzuki-blue">V-Strom 250</span> Riding Experience
+            </h2>
+          </div>
+          
+          <div className="grid md:grid-cols-2 gap-6 mb-10">
+            <div className="rounded-2xl overflow-hidden bg-white border border-gray-100 flex items-center justify-center p-6 sm:p-10 shadow-lg group">
+              <div className="relative w-full h-[300px] sm:h-[400px]">
+                <Image 
+                  src="/images/bikes/v-strom-sx/v-strom-sx-yellowColour.png" 
+                  alt="Chassis Frame Design" 
+                  fill
+                  className="object-contain group-hover:scale-105 transition-transform duration-700 p-4"
+                  unoptimized
+                />
+              </div>
+            </div>
+            <div className="rounded-2xl overflow-hidden bg-white border border-gray-100 flex items-center justify-center p-6 sm:p-10 shadow-lg group">
+              <div className="relative w-full h-[300px] sm:h-[400px]">
+                <Image 
+                  src="/images/bikes/v-strom-sx/V-strom-sx-blackColour.png" 
+                  alt="Chassis Side View" 
+                  fill
+                  className="object-contain group-hover:scale-105 transition-transform duration-700 p-4"
+                  unoptimized
+                />
+              </div>
+            </div>
+          </div>
+          
+          <div className="bg-white border border-gray-100 rounded-2xl p-8 sm:p-12 flex flex-col md:flex-row items-center gap-6 md:gap-12 shadow-xl">
+            <div className="md:w-1/3">
+              <h3 className="text-2xl sm:text-3xl font-extrabold text-suzuki-blue tracking-widest uppercase">RUGGEDLY COMPACT</h3>
+            </div>
+            <div className="md:w-2/3 border-t md:border-t-0 md:border-l border-gray-100 pt-6 md:pt-0 md:pl-12">
+              <p className="text-gray-600 text-lg sm:text-xl leading-relaxed font-medium">
+                A well-rounded chassis forms the backbone of the V-STROM SX, bringing together a feature set suited for riding both paved and unpaved roads.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* SECTION: STYLING */}
+      <section id="section-styling" className="scroll-mt-32 bg-white py-16 sm:py-24 border-b border-gray-100">
+        <div className="max-w-[1920px] mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-gray-900 uppercase tracking-wider mb-2">
+              Styling Highlights of the <span className="text-suzuki-blue">V-Strom SX 250</span>
+            </h2>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div className="lg:col-span-3 text-center mb-8">
+              <Image src="/images/bikes/v-strom-sx/v-strom-sx-yellowColour.png" alt="Styling Highlights" width={800} height={400} className="w-full h-auto max-h-[60vh] object-contain rounded-2xl border border-gray-200 bg-gray-100 p-8" unoptimized />
+              <p className="mt-8 text-gray-600 text-lg leading-relaxed max-w-4xl mx-auto font-medium">
+                The design concept behind the V-STROM SX was "Toughness in a Slender Shell." Toughness comes from its rugged, adventure-inspired looks, confidence-inspiring chassis. The slender shell refers to a slim exterior shape owing to the compact engine design that appears to be wrapped in a "protector-like" shell. Its nimble handling and light weight make it simple to maneuver through the city.
+              </p>
+            </div>
+            
+            {[
+              { img: "back-desigen.jpg", title: "Beak Design", desc: "A beak design inspired by the legendary DR-Z racer and DR-BIG off-road models, which was brought back and remade specifically for the V-STROM." },
+              { img: "LED-Headlight.jpg", title: "LED Headlight", desc: "Stylish LED headlights are octagonal shaped with unique high/low beam set up arranging LED lights in three separate rows for a sleek look and strong road presence." },
+              { img: "LED-headlights.jpg", title: "LED Tail Lights", desc: "The LED tail lights are bright, keeping the machine highly visible at night." },
+              { img: "Knuckle-covers.jpg", title: "Knuckle Covers", desc: "Knuckle covers keep wind, rain and small rocks off the rider’s hands. This keeps them drier on long rides for added comfort and less fatigue." },
+              { img: "Windscreen.jpg", title: "Compact Windscreen", desc: "Compact yet highly functional windscreen shields well, reducing fatigue on long rides." },
+              { img: "Separate-seat.jpg", title: "Separate Seat", desc: "A separate seat not only lends a sporty look, but also provides plenty of comfort for both rider and passenger." },
+              { img: "Dual-exit-muffler.jpg", title: "Dual-Exit Muffler", desc: "The short, all-black dual-exit muffler is specifically designed for the V-STROM SX with rugged-looking muffler cap." },
+              { img: "Engine-under-cowling.jpg", title: "Engine Under-Cowling", desc: "Engine under-cowling offers a tough, rugged look and adds balance to the bike’s exterior lines." },
+              { img: "Graphics.jpg", title: "Sport-Inspired Graphics", desc: "Sport-inspired graphics hint at the V-STROM SX's sporty side, while a textured pattern improves both the look and feel." }
+            ].map((feature, i) => (
+              <div key={i} className="bg-white border border-gray-100 rounded-2xl overflow-hidden flex flex-col group shadow-lg hover:border-suzuki-blue/30 hover:-translate-y-1 transition-all">
+                <div className="h-56 relative overflow-hidden bg-gray-50 p-4 flex items-center justify-center">
+                  <Image src="/images/bikes/v-strom-sx/V-strom-sx-redColour.png" alt={feature.title} fill className="object-contain p-2 group-hover:scale-105 transition-transform duration-500" unoptimized />
+                </div>
+                <div className="p-6 flex-1 flex flex-col border-t border-gray-100">
+                  <h3 className="text-xl font-bold text-gray-900 mb-3 uppercase tracking-wider">{feature.title}</h3>
+                  <p className="text-gray-500 text-sm leading-relaxed">{feature.desc}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* SECTION: ENGINE PERFORMANCE */}
+      <section id="section-engine-performance" className="scroll-mt-32 bg-gray-50 py-16 sm:py-24 border-b border-gray-100">
+        <div className="max-w-[1920px] mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-gray-900 uppercase tracking-wider mb-2">
+              Engine Performance of the <span className="text-suzuki-blue">Suzuki V-Strom SX</span>
+            </h2>
+          </div>
+          
+          <div className="grid lg:grid-cols-2 gap-12 items-center mb-16 max-w-7xl mx-auto">
+            <div className="order-2 lg:order-1">
+              <h3 className="text-3xl font-extrabold text-suzuki-blue mb-6 uppercase">Suzuki Eco Performance</h3>
+              <p className="text-gray-600 text-lg leading-relaxed mb-6 font-medium">
+                SEP engines feature weight saving and friction-reducing technology to allow both low fuel consumption and excellent power characteristics. In the V-STROM SX, the SEP engine offers brisk acceleration but uses little fuel in the process.
+              </p>
+              <div className="bg-white border border-gray-100 rounded-2xl p-8 shadow-lg inline-block hover:border-suzuki-blue/30 transition-colors">
+                <div className="text-3xl font-black text-suzuki-blue border-b-2 border-suzuki-blue inline-block mb-4">SEP</div>
+              </div>
+            </div>
+            <div className="rounded-2xl overflow-hidden bg-gray-100 flex items-center justify-center shadow-lg group h-[400px]">
+              <Image src="/images/bikes/v-strom-sx/V-strom-sx-redColour.png" alt="Engine" width={600} height={400} className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-700 p-8" unoptimized />
+            </div>
+          </div>
+          
+          <div className="bg-white border border-gray-100 rounded-3xl p-8 sm:p-12 shadow-xl max-w-7xl mx-auto flex flex-col md:flex-row gap-10 items-center">
+            <div className="md:w-1/3 flex justify-center">
+              <div className="text-3xl font-black text-suzuki-blue border-b-2 border-suzuki-blue inline-block drop-shadow-xl hover:scale-105 transition-transform">SOCS</div>
+            </div>
+            <div className="md:w-2/3 md:border-l border-gray-100 md:pl-10">
+              <h3 className="text-2xl font-extrabold text-gray-900 mb-4 uppercase tracking-widest">Suzuki Oil Cooling System <span className="text-suzuki-blue">(SOCS)</span></h3>
+              <p className="text-gray-500 text-md leading-relaxed">
+                The world's first oil-cooled motorcycle engine was developed by Suzuki and has been updated ever since, becoming the key to producing smaller, lighter engines as the use of an oil cooling system allows a smaller, more compact design. Not only does this system offer advantages in size, but it also excels in durability and combustion efficiency.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* SECTION: ELECTRONIC DESIGN */}
+      <section id="section-electronics" className="scroll-mt-32 bg-white py-16 sm:py-24 border-b border-gray-100">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-gray-900 uppercase tracking-wider mb-2">
+              Electronic Features and <span className="text-suzuki-blue">Smart Tech</span>
+            </h2>
+          </div>
+          <div className="rounded-3xl overflow-hidden border border-gray-200 shadow-xl bg-gray-50 p-2 hover:border-suzuki-blue/30 transition-colors">
+             <Image src="/images/bikes/v-strom-sx/V-strom-sx-blackColour.png" alt="Electronic Console" width={800} height={400} className="w-full h-[400px] object-contain bg-gray-100 rounded-2xl hover:scale-[1.02] transition-transform duration-700 p-12" unoptimized />
+          </div>
+        </div>
+      </section>
+
+      {/* SECTION: RIDE CONNECT */}
+      <section id="section-ride-connect" className="scroll-mt-32 bg-gray-50 py-16 sm:py-24 border-b border-gray-100">
+        <div className="max-w-[1920px] mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-gray-900 uppercase tracking-wider mb-2">
+              Suzuki <span className="text-suzuki-blue">Ride Connect</span>
+            </h2>
+          </div>
+          
+          <div className="grid lg:grid-cols-2 gap-12 items-center max-w-7xl mx-auto">
+            <div className="order-2 lg:order-1 grid sm:grid-cols-2 gap-6">
+              {[
+                { title: "Caller ID & Alerts", desc: "Get to know who is calling and view missed calls, without even touching the phone." },
+                { title: "Speed Alert", desc: "Set a speed limit on your Suzuki Ride Connect app and get an alert whenever you exceed that limit." },
+                { title: "Phone Battery Level", desc: "Phone Battery Level Display so that you never run out of power." },
+                { title: "Turn-by-Turn Nav", desc: "Big and Bold Turn-by-Turn Navigation icon display so that you never go off track." },
+                { title: "ETA Display", desc: "Estimated Time of Arrival display for never being late to your destination." }
+              ].map((feat, i) => (
+                <div key={i} className="bg-white border border-gray-100 rounded-2xl p-6 shadow-lg hover:border-suzuki-blue/30 transition-all hover:-translate-y-1">
+                  <h3 className="text-lg font-bold text-suzuki-blue mb-3 uppercase tracking-wider">{feat.title}</h3>
+                  <p className="text-gray-500 text-sm leading-relaxed">{feat.desc}</p>
+                </div>
+              ))}
+            </div>
+            <div className="order-1 lg:order-2 flex justify-center">
+              <Image src="/images/cards/Gixxer-250-Card.jpg" alt="Ride Connect App" width={600} height={800} className="w-full h-auto max-w-md drop-shadow-[0_0_50px_rgba(0,51,153,0.15)] hover:scale-105 transition-transform duration-700 rounded-xl" unoptimized />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* SECTION: ACCESSORIES */}
+      <section id="section-accessories" className="scroll-mt-32 bg-white py-16 sm:py-24 border-b border-gray-100">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <SectionHeader eyebrow="Personalise Your Ride" title="Genuine" accent="Accessories"
+            subtitle="Enhance your machine with official Suzuki accessories — designed to fit perfectly and built to last." />
+          <div className="mt-12 grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {bikeData.accessoriesList.map((f, i) => (
+              <motion.div key={f.title}
+                initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }} transition={{ delay: i * 0.07 }}
+                className="bg-gray-50 rounded-2xl p-6 shadow-lg border border-gray-100 hover:border-suzuki-blue/30 hover:-translate-y-1 transition-all">
+                <div className="text-4xl mb-3">{f.icon}</div>
+                <h3 className="text-base font-extrabold text-gray-900 uppercase tracking-wider mb-2">{f.title}</h3>
+                <p className="text-gray-500 text-sm leading-relaxed">{f.desc}</p>
+              </motion.div>
+            ))}
+          </div>
+          <div className="mt-10 text-center">
+            <Link href="/contact">
+              <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}
+                className="bg-suzuki-blue hover:bg-blue-700 text-white px-10 py-4 rounded-full font-extrabold uppercase tracking-widest shadow-lg shadow-suzuki-blue/20 inline-flex items-center gap-2 transition-colors">
+                Enquire About Accessories
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                </svg>
+              </motion.button>
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* SECTION: SPECIFICATIONS */}
+      <section id="section-specifications" className="scroll-mt-32 bg-gray-50 py-16 sm:py-24 border-b border-gray-100">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <SectionHeader eyebrow="Technical Data" title="Complete" accent="Specifications"
+            subtitle="Every detail engineered to perfection — explore the full technical breakdown of the machine." />
+          <div className="flex flex-wrap justify-center gap-2 sm:gap-3 mt-10 mb-8">
+            {specTabs.map((tab) => (
+              <motion.button key={tab.id} onClick={() => setSpecTab(tab.id)}
+                whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.96 }}
+                className={'px-6 py-2.5 rounded-full font-bold uppercase tracking-wider text-xs transition-all duration-300 border border-gray-200 ' + (
+                  specTab === tab.id
+                    ? 'bg-suzuki-blue text-white shadow-lg shadow-suzuki-blue/20 border-suzuki-blue'
+                    : 'bg-white text-gray-500 hover:text-gray-900 hover:bg-gray-100'
+                )}>
+                {tab.label}
+              </motion.button>
+            ))}
+          </div>
+          <AnimatePresence mode="wait">
+            {specTabs.filter(t => t.id === specTab).map(tab => (
+              <motion.div key={tab.id}
+                initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -16 }}
+                transition={{ duration: 0.3 }}
+                className="bg-white rounded-3xl shadow-xl overflow-hidden border border-gray-100">
+                <div className="bg-gray-50 px-6 sm:px-10 py-5 border-b border-gray-100">
+                  <h3 className="text-suzuki-blue text-xl sm:text-2xl font-extrabold tracking-widest uppercase">{tab.label}</h3>
+                </div>
+                <div className="divide-y divide-gray-100">
+                  {tab.rows.map((row, i) => (
+                    <motion.div key={row.label}
+                      className="grid grid-cols-2 px-6 sm:px-10 py-4 hover:bg-gray-50 transition-colors"
+                      initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: i * 0.04 }}>
+                      <span className="text-gray-500 font-bold uppercase tracking-wider text-xs sm:text-sm flex items-center">{row.label}</span>
+                      <span className="text-gray-900 font-extrabold text-sm sm:text-base">{row.value}</span>
                     </motion.div>
                   ))}
                 </div>
               </motion.div>
-
-              {/* Interaction Hint */}
-              <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-3 bg-white/10 backdrop-blur-md border border-white/20 px-4 py-2 rounded-full pointer-events-none opacity-0 group-hover:opacity-100 transition-all duration-500 transform translate-y-4 group-hover:translate-y-0">
-                <svg className="w-4 h-4 text-white animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122" />
-                </svg>
-                <span className="text-white text-xs font-medium tracking-wider uppercase">Interactive View</span>
-              </div>
-            </motion.div>
-          </motion.div>
-
-          {/* Info Section */}
-          <motion.div
-            initial={{ opacity: 0, x: 30, scale: 0.95 }}
-            whileInView={{ opacity: 1, x: 0, scale: 1 }}
-            viewport={{ once: true, margin: "-20px" }}
-            transition={{
-              duration: 0.8,
-              type: "spring",
-              stiffness: 100
-            }}
-          >
-            <motion.div
-              className="bg-white rounded-2xl shadow-xl p-5 sm:p-6 md:p-8 lg:p-10"
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.2 }}
-            >
-              <motion.h2
-                className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 mb-4"
-                initial={{ opacity: 0 }}
-                whileInView={{ opacity: 1 }}
-                viewport={{ once: true }}
-              >
-                V-STROM SX
-              </motion.h2>
-
-              <motion.p
-                className="text-xl text-gray-600 mb-8"
-                initial={{ opacity: 0 }}
-                whileInView={{ opacity: 1 }}
-                viewport={{ once: true }}
-                transition={{ delay: 0.2 }}
-              >
-                Adventure touring motorcycle designed for long rides and off-road capabilities. Experience the perfect blend of power and comfort.
-              </motion.p>
-
-
-              {/* Color Variants - Enhanced for mobile */}
-              <div className="mb-6 sm:mb-8">
-                <motion.h3
-                  className="text-lg sm:text-xl font-bold text-gray-900 mb-3 sm:mb-4"
-                  initial={{ opacity: 0, x: -10 }}
-                  whileInView={{ opacity: 1, x: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: 0.4 }}
-                >
-                  Available Colors:
-                </motion.h3>
-                <motion.div
-                  className="flex flex-wrap gap-3 sm:gap-4 justify-center sm:justify-start"
-                  initial={{ opacity: 0, y: 10 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: 0.5 }}
-                >
-                  {colorVariants.map((color, index) => (
-                    <motion.button
-                      key={color.name}
-                      onClick={() => setSelectedColor(color)}
-                      className={`relative group flex flex-col items-center gap-1.5 sm:gap-2 p-2.5 sm:p-3 rounded-xl transition-all ${selectedColor.name === color.name
-                        ? 'bg-gray-100 scale-110 shadow-lg ring-2 ring-suzuki-blue ring-offset-2'
-                        : 'bg-gray-50 hover:bg-gray-100'
-                        }`}
-                      initial={{ opacity: 0, scale: 0.8, rotate: -10 }}
-                      whileInView={{ opacity: 1, scale: 1, rotate: 0 }}
-                      viewport={{ once: true }}
-                      transition={{
-                        delay: 0.5 + index * 0.1,
-                        type: "spring",
-                        stiffness: 200
-                      }}
-                      whileHover={{ scale: 1.15, rotate: 5 }}
-                      whileTap={{ scale: 0.9, rotate: -5 }}
-                      title={color.name}
-                    >
-                      <motion.div
-                        className={`w-14 h-14 sm:w-16 sm:h-16 md:w-20 md:h-20 rounded-full border-4 transition-all ${selectedColor.name === color.name
-                          ? 'border-suzuki-blue shadow-xl scale-110 ring-2 ring-suzuki-blue/50'
-                          : 'border-gray-300'
-                          }`}
-                        style={{ backgroundColor: color.hex }}
-                        whileHover={{ scale: 1.2, rotate: 360 }}
-                        transition={{ duration: 0.5 }}
-                      />
-                      <span className={`text-xs sm:text-sm font-medium text-center ${selectedColor.name === color.name ? 'text-suzuki-blue font-bold' : 'text-gray-600'
-                        }`}>
-                        {color.name}
-                      </span>
-                    </motion.button>
-                  ))}
-                </motion.div>
-              </div>
-
-              {/* Action Buttons - Enhanced for mobile */}
-              <motion.div
-                className="flex flex-col sm:flex-row gap-3 sm:gap-4"
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: 0.6 }}
-              >
-                <motion.button
-                  onClick={openZoom}
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  className="w-full bg-gray-100 hover:bg-gray-200 text-gray-800 px-6 py-4 rounded-xl text-lg font-bold transition-all flex items-center justify-center gap-3 border border-gray-200 shadow-sm active:shadow-inner"
-                >
-                  <motion.svg
-                    className="w-6 h-6 text-suzuki-blue"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                    animate={{ scale: [1, 1.1, 1] }}
-                    transition={{ duration: 2, repeat: Infinity }}
-                  >
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v6m3-3H7" />
-                  </motion.svg>
-                  <span>Interactive Zoom View</span>
-                </motion.button>
-              </motion.div>
-            </motion.div>
-          </motion.div>
+            ))}
+          </AnimatePresence>
         </div>
-      </div>
+      </section>
 
       {/* Zoom Modal */}
       <ZoomableImageModal
         src={selectedColor.image}
-        alt={`Zoomed V-STROM SX ${selectedColor.name}`}
+        alt={'Zoomed Bike'}
         isOpen={isZoomed}
         onClose={closeZoom}
       />
     </div>
   )
 }
-

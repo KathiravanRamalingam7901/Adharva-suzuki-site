@@ -10,7 +10,7 @@ interface Variant {
   image: string
 }
 
-interface ScooterCard {
+interface EVCard {
   id: string
   name: string
   description: string
@@ -19,62 +19,26 @@ interface ScooterCard {
   variants: Variant[]
 }
 
-const scooterCards: ScooterCard[] = [
-
+const evCards: EVCard[] = [
   {
-    id: 'access-125',
-    name: 'Access 125',
-    description: 'Trusted, efficient and comfortable everyday scooter.',
-    cardImage: '/images/scooters/cards/Access 125.jpg',
-    link: '/products/scooters/access-125',
+    id: 'e-access',
+    name: 'e-Access',
+    description: "Suzuki's first electric scooter, combining iconic style with silent, powerful performance.",
+    cardImage: '/images/scooters/e-access/hero-desktop.jpg',
+    link: '/products/ev/e-access',
     variants: [
-      { name: 'Standard Edition', image: '/images/scooters/Access/Access Standard Edition.png' },
-      { name: 'Special Edition', image: '/images/scooters/Access/Access Special Edition.png' },
-      { name: 'Ride Connect Edition', image: '/images/scooters/Access/Access Ride Connect Edition.png' },
-      { name: 'Connect TFT Edition', image: '/images/scooters/Access/Access Connect TFT Edition.png' },
-    ],
-  },
-  {
-    id: 'avenis',
-    name: 'Avenis',
-    description: 'Sporty and stylish scooter for the modern urban rider.',
-    cardImage: '/images/scooters/cards/Avenis.jpg',
-    link: '/products/scooters/avenis',
-    variants: [
-      { name: 'Yellow', image: '/images/scooters/Avenis/Avenis_Yellow.png' },
-      { name: 'Red', image: '/images/scooters/Avenis/Avenis_Red.png' },
-      { name: 'White', image: '/images/scooters/Avenis/Avenis_White.png' },
-      { name: 'Black', image: '/images/scooters/Avenis/Avenis_Black.png' },
-      { name: 'Silver', image: '/images/scooters/Avenis/Avenis_Silver.png' },
-    ],
-  },
-  {
-    id: 'burgman-street',
-    name: 'Burgman Street',
-    description: 'Maxi-styled premium scooter with outstanding comfort.',
-    cardImage: '/images/scooters/cards/Burgman Street.jpg',
-    link: '/products/scooters/burgman-street',
-    variants: [
-      { name: 'Standard Edition', image: '/images/scooters/Burgman Street/Burgman Street Standard Edition.png' },
-      { name: 'Ride Connect Edition', image: '/images/scooters/Burgman Street/Burgman Street Ride Connect Edition.png' },
-    ],
-  },
-  {
-    id: 'burgman-street-ex',
-    name: 'Burgman Street EX',
-    description: 'Exclusive variant with advanced features and premium finish.',
-    cardImage: '/images/scooters/cards/Burgman Street Ex.jpg',
-    link: '/products/scooters/burgman-street-ex',
-    variants: [
-      { name: 'Metallic Matte Dark Blue', image: '/images/scooters/Burgman Street Ex/Burgman Street Ex.png' },
+      { name: 'Metallic Mat Black & Metallic Mat Bordeaux Red', image: '/images/scooters/e-access/variant-black.png' },
+      { name: 'Pearl Grace White & Metallic Mat Fibroin Gray', image: '/images/scooters/e-access/variant-white.png' },
+      { name: 'Pearl Jabe Green & Metallic Mat Fibroin Gray', image: '/images/scooters/e-access/variant-green.png' },
+      { name: 'Metallic Mat Stellar Blue & Metallic Mat Fibroin Gray', image: '/images/scooters/e-access/variant-blue.png' },
     ],
   },
 ]
 
-export default function ScootersPage() {
-  const [modalCard, setModalCard] = useState<ScooterCard | null>(null)
+export default function EVPage() {
+  const [modalCard, setModalCard] = useState<EVCard | null>(null)
 
-  const openModal = (card: ScooterCard, e: React.MouseEvent) => {
+  const openModal = (card: EVCard, e: React.MouseEvent) => {
     e.preventDefault()
     e.stopPropagation()
     setModalCard(card)
@@ -106,7 +70,7 @@ export default function ScootersPage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.25 }}
           >
-            Urban Excellence
+            Sustainable Mobility
           </motion.p>
           <motion.h1
             className="text-4xl sm:text-5xl md:text-6xl font-extrabold mb-4 text-slate-900"
@@ -114,7 +78,7 @@ export default function ScootersPage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3, duration: 0.6 }}
           >
-            Premium <span className="text-suzuki-red">Scooters</span>
+            Electric <span className="text-suzuki-blue">Vehicles</span>
           </motion.h1>
           <motion.p
             className="text-base sm:text-lg md:text-xl text-slate-700 max-w-3xl mx-auto leading-relaxed"
@@ -122,15 +86,15 @@ export default function ScootersPage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4, duration: 0.6 }}
           >
-            Sleek, efficient, and feature-packed scooters designed for effortless urban commuting and unmatched reliability.
+            Experience the future of commuting with our zero-emission electric vehicles.
           </motion.p>
         </div>
       </motion.section>
 
-      {/* Scooter Cards Grid */}
+      {/* EV Cards Grid */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 md:py-20">
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8 md:gap-10">
-          {scooterCards.map((card, index) => (
+          {evCards.map((card, index) => (
             <motion.div
               key={card.id}
               initial={{ opacity: 0, y: 50, scale: 0.9, rotateY: -15 }}
@@ -263,7 +227,7 @@ export default function ScootersPage() {
             whileInView={{ opacity: 1 }}
             viewport={{ once: true }}
           >
-            Need Help Choosing?
+            Join the Electric Revolution
           </motion.h2>
           <motion.p
             className="text-gray-600 mb-8 text-base sm:text-lg max-w-2xl mx-auto"
@@ -272,7 +236,7 @@ export default function ScootersPage() {
             viewport={{ once: true }}
             transition={{ delay: 0.2 }}
           >
-            Our expert team is ready to help you pick the perfect scooter that matches your daily commute and riding preferences.
+            Discover the perfect blend of performance and sustainability. Our team is ready to help you experience our EVs.
           </motion.p>
           <motion.div
             initial={{ opacity: 0, y: 20 }}

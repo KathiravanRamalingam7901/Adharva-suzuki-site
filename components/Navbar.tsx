@@ -14,7 +14,7 @@ export default function Navbar() {
 
   return (
     <nav className="bg-white shadow-lg fixed w-full top-0 z-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-full mx-auto px-4 sm:px-6 lg:px-12">
         <div className="flex justify-between items-center h-20">
           <div className="flex-shrink-0">
             <Link href="/" className="flex items-center hover:opacity-90 transition-opacity">
@@ -34,8 +34,8 @@ export default function Navbar() {
           
           {/* Desktop Menu */}
           <div className="hidden md:block h-full">
-            <div className="flex items-center h-full space-x-1">
-              <Link href="/" className="text-gray-700 hover:text-suzuki-blue px-3 py-2 rounded-md text-sm font-medium transition">
+            <div className="flex items-center h-full xl:space-x-4 lg:space-x-2 space-x-1">
+              <Link href="/" className="text-gray-700 hover:text-suzuki-blue px-3 py-2 rounded-md text-sm font-medium transition whitespace-nowrap">
                 Home
               </Link>
               
@@ -45,7 +45,7 @@ export default function Navbar() {
                 onMouseEnter={() => setProductsOpen(true)}
                 onMouseLeave={() => setProductsOpen(false)}
               >
-                <button className="text-gray-700 hover:text-suzuki-blue px-3 py-2 rounded-md text-sm font-medium transition flex items-center">
+                <button className="text-gray-700 hover:text-suzuki-blue px-3 py-2 rounded-md text-sm font-medium transition flex items-center whitespace-nowrap">
                   Products
                   <svg className="ml-1 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
@@ -66,6 +66,9 @@ export default function Navbar() {
                       <Link href="/products/scooters" className="block px-4 py-2 text-sm text-gray-700 hover:bg-suzuki-blue hover:text-white transition">
                         Scooters
                       </Link>
+                      <Link href="/products/ev" className="block px-4 py-2 text-sm text-gray-700 hover:bg-suzuki-blue hover:text-white transition">
+                        EV
+                      </Link>
                     </motion.div>
                   )}
                 </AnimatePresence>
@@ -77,7 +80,7 @@ export default function Navbar() {
                 onMouseEnter={() => setEnquiryOpen(true)}
                 onMouseLeave={() => setEnquiryOpen(false)}
               >
-                <button className="text-gray-700 hover:text-suzuki-blue px-3 py-2 rounded-md text-sm font-medium transition flex items-center">
+                <button className="text-gray-700 hover:text-suzuki-blue px-3 py-2 rounded-md text-sm font-medium transition flex items-center whitespace-nowrap">
                   For Enquiry
                   <svg className="ml-1 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
@@ -115,22 +118,30 @@ export default function Navbar() {
                 </AnimatePresence>
               </div>
 
-              <Link href="/gallery" className="text-gray-700 hover:text-suzuki-blue px-3 py-2 rounded-md text-sm font-medium transition">
+              <Link href="/gallery" className="text-gray-700 hover:text-suzuki-blue px-3 py-2 rounded-md text-sm font-medium transition whitespace-nowrap">
                 Gallery
               </Link>
-              <Link href="/offers" className="text-gray-700 hover:text-suzuki-blue px-3 py-2 rounded-md text-sm font-medium transition">
+              <Link href="/offers" className="text-gray-700 hover:text-suzuki-blue px-3 py-2 rounded-md text-sm font-medium transition whitespace-nowrap">
                 Offers
               </Link>
-              <Link href="/about" className="text-gray-700 hover:text-suzuki-blue px-3 py-2 rounded-md text-sm font-medium transition">
+              <a 
+                href="https://www.suzukimotorcycle.co.in/accessories" 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                className="text-gray-700 hover:text-suzuki-blue px-3 py-2 rounded-md text-sm font-medium transition whitespace-nowrap"
+              >
+                Accessories
+              </a>
+              <Link href="/about" className="text-gray-700 hover:text-suzuki-blue px-3 py-2 rounded-md text-sm font-medium transition whitespace-nowrap">
                 About Us
               </Link>
-              <Link href="/blogs" className="text-gray-700 hover:text-suzuki-blue px-3 py-2 rounded-md text-sm font-medium transition">
+              <Link href="/blogs" className="text-gray-700 hover:text-suzuki-blue px-3 py-2 rounded-md text-sm font-medium transition whitespace-nowrap">
                 Blogs
               </Link>
-              <Link href="/careers" className="text-gray-700 hover:text-suzuki-blue px-3 py-2 rounded-md text-sm font-medium transition">
+              <Link href="/careers" className="text-gray-700 hover:text-suzuki-blue px-3 py-2 rounded-md text-sm font-medium transition whitespace-nowrap">
                 Careers
               </Link>
-              <Link href="/contact" className="bg-suzuki-blue text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-opacity-90 transition">
+              <Link href="/contact" className="bg-suzuki-blue text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-opacity-90 transition whitespace-nowrap">
                 Contact Us
               </Link>
             </div>
@@ -301,6 +312,7 @@ export default function Navbar() {
                       subItems: [
                         { href: "/products/motorcycles", label: "Motorcycles" },
                         { href: "/products/scooters", label: "Scooters" },
+                        { href: "/products/ev", label: "EV" },
                       ]
                     },
                     { 
@@ -320,6 +332,12 @@ export default function Navbar() {
                     },
                     { href: "/gallery", label: "Gallery" },
                     { href: "/offers", label: "Offers" },
+                    { 
+                      href: "https://www.suzukimotorcycle.co.in/accessories", 
+                      label: "Accessories", 
+                      target: "_blank", 
+                      rel: "noopener noreferrer" 
+                    },
                     { href: "/about", label: "About Us" },
                     { href: "/blogs", label: "Blogs", isHighlighted: true },
                     { href: "/careers", label: "Careers" },
@@ -382,6 +400,8 @@ export default function Navbar() {
                       ) : (
                         <Link
                           href={item.href}
+                          target={item.target}
+                          rel={item.rel}
                           onClick={() => setIsOpen(false)}
                           className={`block py-4 text-lg font-medium transition-colors ${
                             item.isHighlighted

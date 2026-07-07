@@ -80,9 +80,9 @@ const branches: Branch[] = [
   {
     id: 'selvapuram',
     name: 'Selvapuram',
-    showroomName: 'Adharvaa Suzuki Showroom & Service Centre',
+    showroomName: 'Best Value Showroom and Service Centre',
     address: '48, sundakkamuthur Rd, Kurinji Garden, Selvapuram South, Selvapuram, Coimbatore, Tamil Nadu 641026',
-    phone: '+91-70920 01400',
+    phone: '+91-70920 02300',
     email: 'service.suzuki@adharvaa.in',
     mapUrl: 'https://maps.app.goo.gl/7UfDmyKCJJAJ2g3Z6',
     openingHours: 'Mon–Sat 9:30am–7:30pm',

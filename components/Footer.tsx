@@ -33,8 +33,19 @@ export default function Footer() {
             <ul className="space-y-2 text-gray-400">
               <li><Link href="/products/motorcycles" className="hover:text-white transition">Motorcycles</Link></li>
               <li><Link href="/products/scooters" className="hover:text-white transition">Scooters</Link></li>
+              <li><Link href="/products/ev" className="hover:text-white transition">EV</Link></li>
               <li><Link href="/gallery" className="hover:text-white transition">Gallery</Link></li>
               <li><Link href="/offers" className="hover:text-white transition">Offers</Link></li>
+              <li>
+                <a 
+                  href="https://www.suzukimotorcycle.co.in/accessories" 
+                  target="_blank" 
+                  rel="noopener noreferrer" 
+                  className="hover:text-white transition"
+                >
+                  Accessories
+                </a>
+              </li>
               <li><Link href="/about" className="hover:text-white transition">About Us</Link></li>
             </ul>
           </div>
