@@ -461,7 +461,7 @@ export default function BikePage() {
           </div>
           <div className="w-full relative overflow-hidden mb-10 shadow-xl border-y border-gray-200 bg-gray-50">
             <Image 
-              src="/images/SectionBanner/250121 Suzuki_VStrom250_Banner_3x1_ratio-01.jpg" 
+              src="/images/SectionBanner/V-Strom Outdoor 3x1.jpg" 
               alt="V-Strom SX Introduction" 
               width={1920} 
               height={1080} 
@@ -535,7 +535,7 @@ export default function BikePage() {
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             <div className="lg:col-span-3 text-center mb-8">
-              <Image src="/images/bikes/v-strom-sx/v-strom-sx-yellowColour.png" alt="Styling Highlights" width={800} height={400} className="w-full h-auto max-h-[60vh] object-contain rounded-2xl border border-gray-200 bg-gray-100 p-8" unoptimized />
+              <Image src="https://www.suzukimotorcycle.co.in/images/website/style-680.jpg" alt="Styling Highlights" width={800} height={400} className="w-full h-auto max-h-[60vh] object-cover rounded-2xl border border-gray-200 bg-gray-100" unoptimized />
               <p className="mt-8 text-gray-600 text-lg leading-relaxed max-w-4xl mx-auto font-medium">
                 The design concept behind the V-STROM SX was "Toughness in a Slender Shell." Toughness comes from its rugged, adventure-inspired looks, confidence-inspiring chassis. The slender shell refers to a slim exterior shape owing to the compact engine design that appears to be wrapped in a "protector-like" shell. Its nimble handling and light weight make it simple to maneuver through the city.
               </p>
@@ -554,7 +554,7 @@ export default function BikePage() {
             ].map((feature, i) => (
               <div key={i} className="bg-white border border-gray-100 rounded-2xl overflow-hidden flex flex-col group shadow-lg hover:border-suzuki-blue/30 hover:-translate-y-1 transition-all">
                 <div className="h-56 relative overflow-hidden bg-gray-50 p-4 flex items-center justify-center">
-                  <Image src="/images/bikes/v-strom-sx/V-strom-sx-redColour.png" alt={feature.title} fill className="object-contain p-2 group-hover:scale-105 transition-transform duration-500" unoptimized />
+                  <Image src={"https://www.suzukimotorcycle.co.in/images/website/" + feature.img} alt={feature.title} fill className="object-cover group-hover:scale-105 transition-transform duration-500" unoptimized />
                 </div>
                 <div className="p-6 flex-1 flex flex-col border-t border-gray-100">
                   <h3 className="text-xl font-bold text-gray-900 mb-3 uppercase tracking-wider">{feature.title}</h3>
@@ -586,7 +586,7 @@ export default function BikePage() {
               </div>
             </div>
             <div className="rounded-2xl overflow-hidden bg-gray-100 flex items-center justify-center shadow-lg group h-[400px]">
-              <Image src="/images/bikes/v-strom-sx/V-strom-sx-redColour.png" alt="Engine" width={600} height={400} className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-700 p-8" unoptimized />
+              <Image src="https://www.suzukimotorcycle.co.in/images/website/Engine-performance.jpg" alt="Engine" width={600} height={400} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" unoptimized />
             </div>
           </div>
           
@@ -613,7 +613,7 @@ export default function BikePage() {
             </h2>
           </div>
           <div className="rounded-3xl overflow-hidden border border-gray-200 shadow-xl bg-gray-50 p-2 hover:border-suzuki-blue/30 transition-colors">
-             <Image src="/images/bikes/v-strom-sx/V-strom-sx-blackColour.png" alt="Electronic Console" width={800} height={400} className="w-full h-[400px] object-contain bg-gray-100 rounded-2xl hover:scale-[1.02] transition-transform duration-700 p-12" unoptimized />
+             <Image src="https://www.suzukimotorcycle.co.in/images/website/Electronick-desigen.jpg" alt="Electronic Console" width={800} height={400} className="w-full h-[400px] object-cover bg-gray-100 rounded-2xl hover:scale-[1.02] transition-transform duration-700" unoptimized />
           </div>
         </div>
       </section>
@@ -643,7 +643,7 @@ export default function BikePage() {
               ))}
             </div>
             <div className="order-1 lg:order-2 flex justify-center">
-              <Image src="/images/cards/Gixxer-250-Card.jpg" alt="Ride Connect App" width={600} height={800} className="w-full h-auto max-w-md drop-shadow-[0_0_50px_rgba(0,51,153,0.15)] hover:scale-105 transition-transform duration-700 rounded-xl" unoptimized />
+              <Image src="https://www.suzukimotorcycle.co.in/images/website/Ride-connect.jpg" alt="Ride Connect App" width={600} height={800} className="w-full h-auto max-w-md drop-shadow-[0_0_50px_rgba(0,51,153,0.15)] hover:scale-105 transition-transform duration-700 rounded-xl" unoptimized />
             </div>
           </div>
         </div>
