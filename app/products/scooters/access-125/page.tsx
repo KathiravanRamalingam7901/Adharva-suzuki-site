@@ -455,13 +455,13 @@ export default function Access125Page() {
 
       {/* SECTION: FEATURES */}
       <section id="section-features" className="scroll-mt-32 bg-gray-50 pt-8 pb-16 sm:pt-12 sm:pb-24">
-        <div className="w-full relative overflow-hidden mb-16 shadow-xl border-y border-gray-200 bg-gray-50">
+        <div className="w-full relative overflow-hidden mb-16 shadow-xl border-y border-gray-200">
           <Image
             src="/images/Banner/Access-New-Blue_Website-Banner_1920-x-965.jpg"
             alt="Suzuki Access 125 Banner"
             width={1920}
             height={965}
-            className="w-full h-auto object-cover max-h-[70vh]"
+            className="w-full h-auto block"
             unoptimized
           />
         </div>
